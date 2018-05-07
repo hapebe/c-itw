@@ -18,6 +18,8 @@ Neben den ersten Schritten in einer Programmiersprache habe ich erstmal folgende
 
 Ansonsten bin ich vor allem überrascht, wie die Übergabe von Array-Parameter an Funktionien funktioniert (oder eben nicht funktioniert), und erst recht: Arrays als "Return-Werte"...
 
+## int-Zahlen sortieren
+
 Jetzt fertig: Programm, dass Zahlenfolgen mittels QuickSort oder BubbleSort sortiert, und dabei einige Zähler erhebt. Habe ich genutzt, um auch mittels `time ...` die tatsächliche Performance auf der Maschine hier zu erheben.
 Syntax für einen solchen Aufruf:
 ```
@@ -29,7 +31,7 @@ Tatsächliche Zahlen:
 
 Das gleich mit Quicksort:
 ```
-time extra/random-1000000.sh | ./viele-zahlen qs
+time extra/[random-1000000.sh](extra/random-1000000.sh) | ./[viele-zahlen](viele-zahlen.c) qs
 ```
 Tatsächliche Zahlen:
 
