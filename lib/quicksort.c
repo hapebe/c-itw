@@ -3,6 +3,15 @@
 // globale Variablen zur Performance-Beurteilung:
 long qsCallCount = 0, qsSwapCount = 0, qsMaxRecurseDepth = 0;
 
+/**
+ * die Performance-"Counter" zurücksetzen, falls mehrere
+ * Sortier-Durchläufe stattfinden.
+ */
+void quicksortResetStats() {
+	qsCallCount = 0;
+	qsSwapCount = 0;
+	qsMaxRecurseDepth = 0;
+}
 
 /**
  * Quelle: http://www.zentut.com/c-tutorial/c-quicksort-algorithm/

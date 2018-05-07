@@ -23,7 +23,7 @@ Ansonsten bin ich vor allem überrascht, wie die Übergabe von Array-Parameter a
 Jetzt fertig: Programm, dass Zahlenfolgen mittels QuickSort oder BubbleSort sortiert, und dabei einige Zähler erhebt. Habe ich genutzt, um auch mittels `time ...` die tatsächliche Performance auf der Maschine hier zu erheben.
 Syntax für einen solchen Aufruf:
 
-Code siehe: [random-1000000.sh](extra/random-1000000.sh), [viele-zahlen](viele-zahlen.c)
+*Code siehe:* [random-1000000.sh](extra/random-1000000.sh), [viele-zahlen](viele-zahlen.c)
 
 ```
 cd <repository dir>
@@ -31,12 +31,16 @@ time extra/random-1000000.sh | ./viele-zahlen
 ```
 Dieser Aufruf generiert 1 Million Zufallszahlen und sortiert sie dann mit Bubblesort - das ist schon ein sehr ehrgeiziges Unterfangen. Meine Schätzung vorher: Es wird ca. 4400s dauern (also etwa 1 1/4 Stunden); und es werden ca. 250 Milliarden Zahlenpaare vertauscht...
 Tatsächliche Zahlen:
+4320,9s; 250.320.138.598 Vertauschungen
 
 Das gleich mit Quicksort:
 ```
 time extra/random-1000000.sh | ./viele-zahlen qs
 ```
 Tatsächliche Zahlen:
+13,6s; 5.361.728 Vertauschungen
+
+Quicksort ist bei diesen Bedingungen also bereits mehr als 300mal schneller.
 
 ## Ideen, ToDos, Projekte
 * erledigt: QuickSort implementieren (http://www.zentut.com/c-tutorial/c-quicksort-algorithm/)
