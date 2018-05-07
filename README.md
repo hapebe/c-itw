@@ -22,6 +22,9 @@ Ansonsten bin ich vor allem überrascht, wie die Übergabe von Array-Parameter a
 
 Jetzt fertig: Programm, dass Zahlenfolgen mittels QuickSort oder BubbleSort sortiert, und dabei einige Zähler erhebt. Habe ich genutzt, um auch mittels `time ...` die tatsächliche Performance auf der Maschine hier zu erheben.
 Syntax für einen solchen Aufruf:
+
+Code siehe: [random-1000000.sh](extra/random-1000000.sh), [viele-zahlen](viele-zahlen.c)
+
 ```
 cd <repository dir>
 time extra/random-1000000.sh | ./viele-zahlen
@@ -31,7 +34,7 @@ Tatsächliche Zahlen:
 
 Das gleich mit Quicksort:
 ```
-time extra/[random-1000000.sh](extra/random-1000000.sh) | ./[viele-zahlen](viele-zahlen.c) qs
+time extra/random-1000000.sh | ./viele-zahlen qs
 ```
 Tatsächliche Zahlen:
 
