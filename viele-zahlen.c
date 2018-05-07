@@ -1,14 +1,31 @@
+#include "debug-switch.c"
 #include <stdio.h>
+#include <string.h> // für strcmp()
+#include "lib/hapebe-shared.h" // für print_int_array()
+#include "lib/bubblesort.c"
+#include "lib/quicksort.c"
 
-#define ANZAHL 100000
-// #define DEBUG 0
+#define ANZAHL 1000000
 
-// forward declaration (die eigentliche Implementierung folgt unten):
-void print_int_array(int* zahlen, int n);
+// nächste Zeile auskommentieren: Die eigentlichen Zahlen werden dann
+// gar nicht mehr ausgegeben (für Performance-Messungen)
+// #define ZAHLENAUSGABE -1
 
-int main(void)
-{
+#define MODE_BUBBLESORT 1
+#define MODE_QUICKSORT 2
+int modus = MODE_BUBBLESORT;
+
+int main(int argc, char *argv[]) {
+
+	// Haben wir ein Argument?
+	if (argc > 1) {
+		if (!strcmp("qs", argv[1])) {
+			modus = MODE_QUICKSORT;
+		}
+	}
+
 	int zahlen[ANZAHL];
+	int zahlenKopie[ANZAHL];
 
 	// Eingabe:
 	printf("Bitte geben Sie %d Zahlen ein:\n", ANZAHL);
@@ -19,16 +36,10 @@ int main(void)
 	}
 	printf("\nDanke.\n\n");
 
+#ifdef ZAHLENAUSGABE
 	// Ausgabe:
-	i=0;
 	printf("Hier kommen Ihre Zahlen:\n");
 	print_int_array(zahlen, ANZAHL);
-	//~ do {
-		//~ printf("%i", zahlen[i]);
-		//~ i++;
-		//~ if (i<ANZAHL) printf(", ");
-	//~ } while (i<ANZAHL);
-	//~ printf("\n");
 
 	// kleinste Zahl:
 	int min = zahlen[0];
@@ -51,59 +62,32 @@ int main(void)
 		}
 	}
 	printf("Die größte Zahl davon ist: %d an %d. Stelle.\n", max, maxIdx+1);
+#endif
 
-	// sortieren:
-	int j; // zweite Schleifenzähler-Variable
-	int temp; // wird zum Tauschen zweier Werte benötigt
-	long outerCount = 0, innerCount = 0;
-	long swapCount = 0, innerSwapCount = 0;
-
-	// maximal brauchen wir N-1 Durchgänge
-	for (i=0; i < ANZAHL-1; i++) {
-		#ifdef DEBUG
-		printf("Äußere Schleife %d:\n", i+1);
-		#endif
-
-		outerCount ++;
-		innerSwapCount = 0;
-		// Bubble sort: die größte Zahl steigt garantiert ans Ende auf;
-		// daher müssen wir nach N Durchgängen N Zahlen am Ende nicht
-		// mehr betrachten.
-		for (j=0; j < ANZAHL-i-1; j++) {
-			innerCount ++;
-			if (innerCount % 1000000 == 0) printf("%ldM innere Schleifen absolviert...\n", innerCount/1000000l);
-
-			if (zahlen[j] > zahlen[j+1]) {
-				// okay, es folgt eine kleinere Zahl auf eine größere,
-				// wir müssen sie tauschen:
-				temp = zahlen[j];
-				zahlen[j] = zahlen[j+1];
-				zahlen[j+1] = temp;
-
-				swapCount ++;
-				innerSwapCount ++;
-
-				// Debug-Ausgabe:
-				#ifdef DEBUG
-				printf("Habe den %d. und %d. Wert vertauscht: ", j, j+1);
-				print_int_array(zahlen, ANZAHL);
-				#endif
-			}
-		}
-		if (innerSwapCount == 0) {
-			printf("In diesem Durchgang wurden keine Werte getauscht - wir sind also fertig!\n");
-			break;
-		}
+	if (modus == MODE_BUBBLESORT) {
+		// Bubble Sort:
+		for (i=0; i<ANZAHL; i++) zahlenKopie[i] = zahlen[i];
+		printf("\nSortieren mit BubbleSort:\n");
+		bubblesort(zahlenKopie, ANZAHL);
+	#ifdef ZAHLENAUSGABE
+		print_int_array(zahlenKopie, ANZAHL);
+	#endif
+		printf("Performance: %ld äußere Durchläufe, %ld innere Durchläufe, %ld Vertauschungen.\n",
+			bubbleOuterCount, bubbleInnerCount, bubbleSwapCount);
 	}
-	// Ausgabe:
-	i=0;
-	printf("Hier kommen Ihre sortierten Zahlen:\n");
-	print_int_array(zahlen, ANZAHL);
-	printf("Performance: %ld äußere Durchläufe, %ld innere Durchläufe, %ld Vertauschungen.\n", outerCount, innerCount, swapCount);
 
+	if (modus == MODE_QUICKSORT) {
+		// Quicksort:
+		for (i=0; i<ANZAHL; i++) zahlenKopie[i] = zahlen[i];
+		printf("\nSortieren mit QuickSort:\n");
+		quicksort(zahlenKopie, 0, ANZAHL - 1, 0);
+	#ifdef ZAHLENAUSGABE
+		print_int_array(zahlenKopie, ANZAHL);
+	#endif
+		printf("Performance: %ld Aufrufe der Funktion (max. Tiefe: %ld), %ld Vertauschungen.\n",
+			qsCallCount, qsMaxRecurseDepth, qsSwapCount);
+	}
 
-	// Fertig:
-	printf("Pause!\n");
 	return 0;
 }
 

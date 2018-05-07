@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root text="&#34;bubblesort2.c&#34;" comment="&#34;Zahlenfolge sortieren, beim Ergebnis die ursprüngliche Reihenfolge mit ausgeben&#34;" color="ffffff" type="program" style="nice">
+	<children>
+		<instruction text="&#34;Zählvariablen vereinbaren: int i, j&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<call text="&#34;Länge der Zahlensequenz bestimmen, in int anzahl speichern&#34;" comment="&#34;Das ist in der eigentlichen Implementierung relativ kompliziert gelöst, weil drei verschiedene &#34;&#34;Modi&#34;&#34; möglich sind (keine Befehlszeilen-Argumente, nur die Länge als Argument; ganz Folge als Argumente)&#34;,&#34;Ggf. könnte/sollte der &#34;&#34;Prozeduraufruf&#34;&#34; (der allerdings streng genommen kein solcher ist) wohl in einem separaten Struktogramm detailliert werden.&#34;" color="ffff80"></call>
+		<instruction text="&#34;Arrays für die Werte und die Ursprungspositionen der Sequenz anlegen: &#34;,&#34;int zahlen[anzahl], &#34;,&#34;int positionen[anzahl]&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<instruction text="&#34;&#62; Ausgabe: &#34;&#34;Bitte geben Sie [anzahl] Zahlen ein:&#34;&#34;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<for text="&#34;FOR i &#60;- 0 TO anzahl&#34;" comment="&#34;&#34;" color="ffffff">
+			<qFor>
+				<instruction text="&#34;&#60; i. Zahl eingeben&#34;,&#34;zahlen[i] &#60;- (Eingabewert)&#34;,&#34;positionen[i] &#60;- i&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+			</qFor>
+		</for>
+		<instruction text="&#34;&#62; Ausgabe: &#34;&#34;Dies sind Ihre Ausgangszahlen:&#34;&#34;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<for text="&#34;FOR i &#60;- 0 TO anzahl&#34;" comment="&#34;Die türkis markierten Abläufe sind identisch und könnten/sollten als wiederverwendbare Prozedur implementiert werden.&#34;" color="80ffff">
+			<qFor>
+				<instruction text="&#34;&#62; Ausgabe: &#34;&#34;{positionen[i] + 1}. Zahl: {zahlen[i]}}&#34;&#34;&#34;" comment="&#34;&#34;" color="80ffff" rotated="0"></instruction>
+			</qFor>
+		</for>
+		<for text="&#34;FOR i &#60;- 0 TO anzahl-1&#34;" comment="&#34;&#34;" color="ffffff">
+			<qFor>
+				<for text="&#34;FOR j &#60;- 0 TO anzahl-i-1&#34;" comment="&#34;&#34;" color="ffffff">
+					<qFor>
+						<alternative text="&#34;zahlen[i] &#62; zahlen[j] ?&#34;" comment="&#34;&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;Array-Elemente tauschen:&#34;,&#34;zahlen[i] &#60;-&#62; zahlen[j]&#34;,&#34;positionen[i] &#60;-&#62; positionen[j]&#34;" comment="&#34;Der eigentliche Code ist umfangreicher und verwendet eine weitere int-Variable &#34;&#34;temp&#34;&#34;.&#34;" color="ffff80" rotated="0"></instruction>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+					</qFor>
+				</for>
+			</qFor>
+		</for>
+		<instruction text="&#34;&#62; Ausgabe: &#34;&#34;Die sortierte Zahlenfolge:&#34;&#34;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<for text="&#34;FOR i &#60;- 0 TO anzahl&#34;" comment="" color="80ffff">
+			<qFor>
+				<instruction text="&#34;&#62; Ausgabe: &#34;&#34;{positionen[i] + 1}. Zahl: {zahlen[i]}}&#34;&#34;&#34;" comment="" color="80ffff" rotated="0"></instruction>
+			</qFor>
+		</for>
+	</children>
+</root>

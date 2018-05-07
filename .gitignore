@@ -2,3 +2,6 @@
 *.o
 *.log
 **/*-zahlen-eingabe
+# Geany project files:
+it5.dev
+it5.layout
