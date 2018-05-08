@@ -8,11 +8,13 @@
 #include "lib/getch.c"
 #endif
 
+#include "lib/baseconv.c"
+
 /**
  * Dieses Programm kann Zahlen von und in verschiedene Zahlensysteme
  * (verschiedene Basen) umwandeln.
  *
- * Zentral sind die Funktionen:
+ * Zentral sind die Funktionen (in lib/baseconv.c):
  *
  * int getNumericIntBase(char * digits, int basis)
  *    (wandelt eine symbolische Zahl in einen int um)
@@ -22,40 +24,6 @@
  *
  */
 
-// so lang darf eine symbolische Zahl maximal sein (die absolute Grenze
-// ergibt sich dann aus dem Binärsystem --> 2^(MAX_LENGTH-1)-1)
-#define MAX_LENGTH 32
-
-// das sind die Ziffern-Zeichen-Konstanten für alle Basen:
-const char CHAR_POOL[] = {
-	'0', '1', '2', '3', '4', '5', '6', '7',
-	'8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
-	'g', 'h', 'i', 'j', 'k', 'L', 'm', 'n',
-	'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-	'w', 'x', 'y', 'z'
-};
-// const char CHAR_POOL_BINARY[] = {'0', 'L'};
-
-// das hier wird programmatisch initilisiert, so dass es eine
-// Reverse-Lookup-Tabelle der vorstehenden Symbole auf ihre
-// Ziffernwerte enthält.
-char reverseCharPool[128];
-
-
-
-/**
- * Einfacher int-Potenzrechner.
- * Gibt zurück: basis hoch exponent
- */
-int pow(int basis, int exponent) {
-	int retval = 1;
-
-	int i;
-	for (i=0; i<exponent; i++) retval *= basis;
-
-	return retval;
-}
-
 
 
 /**
@@ -63,6 +31,10 @@ int pow(int basis, int exponent) {
  * einer Zahl zu einer Basis
  */
 void explainIntBase(char * digits, int basis) {
+	if (!reverseCharPoolInitialized) {
+		fprintf(stderr, "Es fehlt ein Aufruf von initReverseCharPool()! \n");
+	}
+
 	int i;
 
 	// das ist hier etwas holprig, aber im Moment weiß ich nichts besseres:
@@ -99,106 +71,6 @@ void explainIntBase(char * digits, int basis) {
 }
 
 
-
-/**
- * dekonstruiert die String-Darstellung einer Ganzzahl zu einer Basis
- * und gibt den Zahlenwert zurück
- */
-int getNumericIntBase(char * digits, int basis) {
-	int i;
-
-	// das ist hier etwas holprig, aber im Moment weiß ich nichts besseres:
-	char digitsArray[MAX_LENGTH];
-	for (i=0; i<MAX_LENGTH; i++) {
-		digitsArray[i] = *digits;
-		digits += 1; // Pointer um ein "Element" weiterschieben
-	}
-
-	// Wie lang ist die Zahl?
-	int length = 0;
-	while ((digitsArray[length] != 0) && (length < MAX_LENGTH)) length++;
-
-	int retval = 0;
-	for (i=0; i<length; i++) {
-		int stellenwert = pow(basis, (length-i-1));
-
-		char symbol = digitsArray[i];
-		int ziffernwert = reverseCharPool[(int)symbol];
-
-		// Fehlerbehandlung:
-		if (ziffernwert >= basis) {
-			fprintf(stderr, "Die Ziffer '%c' ist im Zahlensystem zur Basis %d nicht erlaubt!\n", symbol, basis);
-			ziffernwert = 0;
-		}
-
-		retval += ziffernwert*stellenwert;
-	}
-
-	return retval;
-}
-
-
-
-/**
- * wandelt z in eine String-Repräsentation im Zahlensystem zur Basis
- * basis um
- */
-char* getSymbolicIntBase(int z, int basis) {
-
-	char digits[MAX_LENGTH];
-	static char retval[MAX_LENGTH];
-
-	int remainder = z;
-	if (z < 0) remainder = -z;
-
-	int cursor = 0, modulo = 0;
-	while (remainder > 0) {
-		modulo = remainder % basis;
-		digits[cursor] = modulo;
-		cursor ++;
-
-		remainder /= basis;
-	}
-
-	// Zahl ausgeben:
-	if (z < 0) printf("-");
-	int i;
-	int writePos = 0;
-	retval[cursor] = 0; // \0, um den String zu terminieren
-	for (i=cursor-1; i>=0; i--) {
-		// if (basis != 2) {
-			retval[writePos] = CHAR_POOL[ (int)digits[i] ];
-		// } else {
-		//	retval[writePos] = CHAR_POOL_BINARY[ (int)digits[i] ];
-		// }
-		writePos ++;
-	}
-
-	return &retval[0];
-}
-
-
-
-/*
- * füllt eine Look-Up-Tabelle mit den numerischen Werten der Ziffern-Zeichen
- */
-void initReverseCharPool() {
-	int i;
-	for (i=0; i<36; i++) {
-		char symbol = CHAR_POOL[i];
-		reverseCharPool[(int)symbol] = i;
-	}
-
-	// Debug-Ausgabe: Wie sieht diese Tabelle denn jetzt aus?
-	/*
-	printf("reverseCharPool[] = \n");
-	for (i=0; i<128; i++) {
-		printf("%3d", reverseCharPool[i]);
-		if ((i+1) % 16 == 0) printf("\n");
-	}
-	printf("\n");
-	*/
-}
 
 
 
@@ -269,7 +141,7 @@ int main(void) {
 	readFromConsole(&eingabe[0], basis); printf("\n");
 
 	z = getNumericIntBase(eingabe, basis); // in int-Zahl umwandeln
-	printf("Ihre symbolische Zahl bedeutet (im Dezimalsystem gerechnet):\n");
+	printf("Ihre symbolische Zahl bedeutet im %der-System:\n", basis);
 	explainIntBase(eingabe, basis);
 	printf("\n");
 
