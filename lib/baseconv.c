@@ -148,14 +148,23 @@ char* getSymbolicIntBase(int z, int basis) {
 	int numDigits = cursor;
 
 	// Zahl ausgeben:
-	if (z < 0) printf("-");
-	int i;
 	cursor = 0;
+	if (z < 0) { retval[cursor] = '-'; cursor ++; }
+
+	int i;
 	for (i=numDigits-1; i>=0; i--) { // von hinten nach vorne...
 		retval[cursor] = CHAR_POOL[ (int)digits[i] ];
 		cursor ++;
 	}
-	retval[cursor] = 0; // ans Ende \0, um den String zu terminieren
+
+	if (cursor == 0) {
+		// wir haben keine Zeichen - die Zahl war wohl 0:
+		retval[cursor] = CHAR_POOL[0];
+		cursor ++;
+	}
+
+	// ans Ende \0, um den String zu terminieren:
+	retval[cursor] = 0;
 
 	return &retval[0];
 }

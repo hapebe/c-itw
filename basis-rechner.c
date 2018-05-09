@@ -183,11 +183,13 @@ int main(void) {
 
 	printf("Hier kommt Ihre Zahl in fremden Basen: \n");
 	int i;
+	int fremdeBasis;
 	for (i=0; i<8; i++) {
-		basis = basen[i];
-		char* bunteZahl = getSymbolicIntBase(z, basis);
-		printf("%s(Basis %d)\n", bunteZahl, basis);
-		explainIntBase(bunteZahl, basis);
+		fremdeBasis = basen[i];
+		if (fremdeBasis == basis) continue; // überspringen, wenn der Ausgangswert sowie in dieser Basis angegeben wurde
+		char* bunteZahl = getSymbolicIntBase(z, fremdeBasis);
+		printf("%s(Basis %d)\n", bunteZahl, fremdeBasis);
+		explainIntBase(bunteZahl, fremdeBasis);
 		printf("\n");
 	}
 

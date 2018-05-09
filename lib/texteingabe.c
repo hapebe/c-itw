@@ -101,8 +101,7 @@ char * texteingabeLengthSet(int maxLength, char * allowedCharSet) {
 	return &buffer[0];
 }
 
-
-char * texteingabe(void) {
+char * texteingabeLength(int maxLength) {
 	// wir erzeugen eine Menge erlaubter Zeichen:
 	static char allowedCharSet[257];
 
@@ -114,6 +113,72 @@ char * texteingabe(void) {
 	// TODO noch Umlaute etc. hinzufügen...
 	allowedCharSet[pos] = 0; // 0-terminiert...
 
-	return texteingabeLengthSet(TEXTEINGABE_BUFFER_SIZE - 1, allowedCharSet);
+	return texteingabeLengthSet(maxLength, allowedCharSet);
 }
+
+char * texteingabe(void) {
+	return texteingabeLength(TEXTEINGABE_BUFFER_SIZE - 1);
+}
+
+char * textEingabeEinZeichenOhneEcho(void) {
+	static char buffer[2]; // 1 char mehr, für die \0 am Ende
+	int cursor = 0;
+	char c;
+
+	while(1) { // Endlosschleife, kann nur per "break;" verlassen werden
+		c = getch();
+
+		// Auf Steuerzeichen prüfen:
+		if (c == 13 || c == 10) {
+			// <Return> - Eingabe abschließen?
+			if (textEingabeAcceptEmpty || cursor > 0) break;
+		} else {
+			// also ein "normales" Zeichen:
+			buffer[cursor] = c;
+			cursor ++;
+		}
+
+		if (cursor == 1) break; // wir haben ein Zeichen, let's go!
+
+	} // Auf das nächste Eingabezeichen warten
+
+	buffer[cursor] = '\0'; // Wir bauen ordentliche 0-terminierte Strings...
+	printf("\n");
+
+	return &buffer[0];
+}
+
+char * textEingabeEinZeichenAusMengeOhneEcho(char * allowedCharSet) {
+	static char buffer[2]; // 1 char mehr, für die \0 am Ende
+	int cursor = 0;
+	char c;
+
+	while(1) { // Endlosschleife, kann nur per "break;" verlassen werden
+		c = getch();
+
+		// Auf Steuerzeichen prüfen:
+		if (c == 13 || c == 10) {
+			// <Return> - Eingabe abschließen?
+			if (textEingabeAcceptEmpty || cursor > 0) break;
+		} else {
+			// also ein "normales" Zeichen:
+
+			// wenn das Zeichen erlaubt ist:
+			if (setContainsAtom(allowedCharSet, c)) {
+				// das Zeichen wird angehängt:
+				buffer[cursor] = c;
+				cursor ++;
+			}
+		}
+
+		if (cursor == 1) break; // wir haben ein Zeichen, let's go!
+
+	} // Auf das nächste Eingabezeichen warten
+
+	buffer[cursor] = '\0'; // Wir bauen ordentliche 0-terminierte Strings...
+	printf("\n");
+
+	return &buffer[0];
+}
+
 
