@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 		// print usage:
 		fprintf(stderr, "baseconv is simple program made for educational purposes of its\n");
 		fprintf(stderr, "author. It can read and write integer numbers (in a range of \n");
-		fprintf(stderr, "0..2^31-1) in numeric symbolic notations with bases from 2..36. \n");
+		fprintf(stderr, "-2^31..2^31-1) in numeric symbolic notations with bases from 2..36. \n");
 		fprintf(stderr, "WARNING: It does not have adequate error handling!\n\n");
 		fprintf(stderr, "Usage:\n\n");
 		fprintf(stderr, "baseconv <decimal number>\n");

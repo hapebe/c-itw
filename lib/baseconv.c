@@ -9,8 +9,9 @@
 // ergibt sich dann aus dem Binärsystem --> 2^(MAX_LENGTH-1)-1)
 #define MAX_LENGTH 32
 
-// wenn 1, dann darf man "Buchstaben"-Ziffern groß und klein schreiben
-// sonst sollte der Wert 0 sein
+// wenn 1, dann darf man "Buchstaben"-Ziffern groß und klein schreiben,
+// sonst sollte der Wert 0 sein (und nur Zeichen in CHAR_POOL sind
+// erlaubt)
 #define ALLOW_MIXED_CASE 1
 
 // das sind die Ziffern-Zeichen-Konstanten für alle Basen:
@@ -94,23 +95,15 @@ int getNumericIntBase(char * digits, int basis) {
 	int i;
 	int negative = 0;
 
-	// Parameter als char[] verfügbar machen -
-	// das ist hier etwas holprig, aber im Moment weiß ich nichts besseres:
-	char digitsArray[MAX_LENGTH];
-	for (i=0; i<MAX_LENGTH; i++) {
-		digitsArray[i] = *digits;
-		digits += 1; // Pointer um ein "Element" weiterschieben
-	}
-
 	// Wie lang ist die Zahl? (0-terminierter String...)
 	int length = 0;
-	while ((digitsArray[length] != 0) && (length < MAX_LENGTH)) length++;
+	while ((digits[length] != 0) && (length < MAX_LENGTH)) length++;
 
 	int retval = 0;
 	for (i=0; i<length; i++) {
 		int stellenwert = pow(basis, (length-i-1));
 
-		char symbol = digitsArray[i];
+		char symbol = digits[i];
 		if (symbol == '-') {
 			negative = -1;
 			continue;
@@ -152,16 +145,17 @@ char* getSymbolicIntBase(int z, int basis) {
 
 		remainder /= basis;
 	}
+	int numDigits = cursor;
 
 	// Zahl ausgeben:
 	if (z < 0) printf("-");
 	int i;
-	int writePos = 0;
-	retval[cursor] = 0; // \0, um den String zu terminieren
-	for (i=cursor-1; i>=0; i--) {
-		retval[writePos] = CHAR_POOL[ (int)digits[i] ];
-		writePos ++;
+	cursor = 0;
+	for (i=numDigits-1; i>=0; i--) { // von hinten nach vorne...
+		retval[cursor] = CHAR_POOL[ (int)digits[i] ];
+		cursor ++;
 	}
+	retval[cursor] = 0; // ans Ende \0, um den String zu terminieren
 
 	return &retval[0];
 }
