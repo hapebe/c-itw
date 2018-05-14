@@ -53,4 +53,15 @@ Anlass bzw. Vorhaben dazu: In das Programm [baseconv](baseconv.c) eine Kommandoz
 ## Ideen, ToDos, Projekte
 * erledigt: QuickSort implementieren (http://www.zentut.com/c-tutorial/c-quicksort-algorithm/)
 * gute alte Zeiten: mal den Quellcode von German Atlantis 6.2 (6.6?) kompilieren und schauen, dass ich den Spiel-"Host" zum laufen bekomme.
+  * nachdem es mit German Atlantis 62 geklappt hat: Ich möchte erstmal eine Quellenrecherche machen: Wer bietet wo welchen Quellcode zum Download an, bzw. verwaltet Code in Versionierungssystemen?
+  * ACheck Quellen von german-atlantis.de: [http://www.german-atlantis.de/data/achk_src.zip]
+  * German Atlantis 6.2 von german-atlantis.de: [http://www.german-atlantis.de/data/version62.zip]
+  * "aktueller" Source-Code des German Atlantis-Servers: [http://www.german-atlantis.de/data/version62.zip] _(existiert vermutlich nicht mehr...)_
+  * englisch-sprachiger Atlantis Source-Code (die Wikipedia nennt das den Quellcode von Atlantis 5.0): [https://github.com/Atlantis-PBEM/Atlantis] (anscheinend C++)
+  * englisch-sprachiger Atlantis Source-Code der Version(en) 4.0.x: [http://www.prankster.com/project/download/download.htm]
+  * Eressea Server auf GitHub: [https://github.com/eressea/server]
+  * Fantasya Server auf GitHub: [https://github.com/wavepacket/Fantasya] (ist in Java implementiert...)
+  * TODO: [http://www.arno-saxena.de/atlantis/atl_home.php]
 * in den Quellcode der GNU core-utils schauen (dort gibt es ja u.a. auch den sort-Befehl...)
+* mal über GUI-Programmierung mit GTK / QT (oder wie sie alle heißen...) nachlesen und vielleicht ein paar Fingerübungen machen
+* über make / Makefile etc. lesen und damit experimentieren (sowas gibt es u.a. ja auch bei den klassischen German-Atlantis-Quellen...)
