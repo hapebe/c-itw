@@ -23,12 +23,21 @@
 #include <string.h> // für strcmp()
 #include "lib/baseconv.c"
 
+void debugging(void) {
+	printf("2^32= %lu\n", pow(2,32));
+	printf("2^62= %lu\n", pow(2,62));
+	// printf("2^63= %lu\n", pow(2,63));
+	// printf("2^64= %lu\n", pow(2,64));
+}
+
 int main(int argc, char *argv[]) {
+	// debugging();
+
 	if (argc < 2 || ((argc == 2) && !strcmp(argv[1], "--help"))) {
 		// print usage:
 		fprintf(stderr, "baseconv is simple program made for educational purposes of its\n");
 		fprintf(stderr, "author. It can read and write integer numbers (in a range of \n");
-		fprintf(stderr, "-2^31..2^31-1) in numeric symbolic notations with bases from 2..36. \n");
+		fprintf(stderr, "-2^63-1..2^63-1) in numeric symbolic notations with bases from 2..36. \n");
 		fprintf(stderr, "WARNING: It does not have adequate error handling!\n\n");
 		fprintf(stderr, "Usage:\n\n");
 		fprintf(stderr, "baseconv <decimal number>\n");
@@ -49,7 +58,7 @@ int main(int argc, char *argv[]) {
 
 	if (argc == 2) {
 		// nur eine Zahl wurde eingegeben -> Dezimal in mehrere:
-		int z = getNumericIntBase(argv[1], 10);
+		long int z = getNumericIntBase(argv[1], 10);
 
 		int basen[] = {2, 3, 4, 5, 8, 10, 16, 36};
 		int i;
@@ -60,13 +69,13 @@ int main(int argc, char *argv[]) {
 		}
 	} else if (argc == 3) {
 		// zwei Zahlen: Dezimal in Ziel-System:
-		int z = getNumericIntBase(argv[1], 10);
+		long int z = getNumericIntBase(argv[1], 10);
 		int basis = getNumericIntBase(argv[2], 10);
 		printf("%s\n", getSymbolicIntBase(z, basis));
 	} else if (argc == 4) {
 		// drei Zahlen: Z, Basis, Ziel-Basis
 		int zBasis = getNumericIntBase(argv[2], 10);
-		int z = getNumericIntBase(argv[1], zBasis);
+		long int z = getNumericIntBase(argv[1], zBasis);
 		int basis = getNumericIntBase(argv[3], 10);
 		printf("%s\n", getSymbolicIntBase(z, basis));
 	}

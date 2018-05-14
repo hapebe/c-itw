@@ -28,8 +28,8 @@ void zeigeBanner(void) {
 	printf("Mit diesem Programm können Sie Ganzzahlen von einem Zahlensystem zum \n");
 	printf("anderen Umwandeln. Es unterstützt auch negative Zahlen.\n");
 	printf("\n");
-	printf("Wenn Sie allerdings die Grenzen eines 32-Bit-int-Wertes überschreiten,\n");
-	printf("erhalten Sie falsche (vielleicht lustige) Ergebnisse.\n");
+	printf("Wenn Sie allerdings die Grenzen eines 64-Bit-long-int-Wertes \n");
+	printf("überschreiten, erhalten Sie falsche (vielleicht lustige) Ergebnisse.\n");
 	printf("\n");
 	printf("(Bitte eine Taste drücken)\n");
 	printf("\n");
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
 		// "Payload"-Variablen:
 		char* eingabe;
-		int zahl;
+		long int zahl;
 		int basisInput = -1, basisOutput = -1;
 
 		// Eingabe-Menu:
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
 		while (!zahlGueltig) {
 			printf("Bitte geben Sie eine %se Zahl ein:\n", SYSTEM_NAMEN[kommandoInt]);
 			textEingabeAcceptEmpty = 0; // keine leere Eingabe akzeptieren...
-			eingabe = texteingabeLengthSet(32, erlaubteSymbole); // printf("Eingegebene Zahl: %s", eingabe); break;
+			eingabe = texteingabeLengthSet(64, erlaubteSymbole); // printf("Eingegebene Zahl: %s", eingabe); break;
 
 			// testen, ob hinter der ersten Stelle ein "-" vorkommt:
 			zahlGueltig = -1; int i;

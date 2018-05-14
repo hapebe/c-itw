@@ -1,13 +1,18 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * Bibliothek zur Umwandlung von Zahlen-Darstellung mit verschiedenen
  * Ziffern-Basen
  */
 
+// did you know: eine unsigned long int-Zahl kann man mit printf so
+// ausgeben:
+// printf("%llu", 285212672);
+
 // so lang darf eine symbolische Zahl maximal sein (die absolute Grenze
-// ergibt sich dann aus dem Binärsystem --> 2^(MAX_LENGTH-1)-1)
-#define MAX_LENGTH 32
+// ergibt sich dann aus dem Binärsystem --> 2^(MAX_LENGTH)-1)
+#define MAX_LENGTH 64
 
 // wenn 1, dann darf man "Buchstaben"-Ziffern groß und klein schreiben,
 // sonst sollte der Wert 0 sein (und nur Zeichen in CHAR_POOL sind
@@ -71,14 +76,23 @@ void initReverseCharPool() {
 
 
 /**
- * Einfacher int-Potenzrechner.
+ * Einfacher (long) int-Potenzrechner.
  * Gibt zurück: basis hoch exponent
  */
-int pow(int basis, int exponent) {
-	int retval = 1;
+long int pow(long basis, int exponent) {
+	long retval = 1;
+	long prevRetval = retval;
 
 	int i;
-	for (i=0; i<exponent; i++) retval *= basis;
+	for (i=0; i<exponent; i++) {
+		prevRetval = retval;
+		retval *= basis;
+
+		if (prevRetval >= retval) {
+			fprintf(stderr, "long int Overflow bei %lu ^ %d!\n", basis, exponent);
+			exit(255);
+		}
+	}
 
 	return retval;
 }
@@ -87,7 +101,7 @@ int pow(int basis, int exponent) {
  * dekonstruiert die String-Darstellung einer Ganzzahl zu einer Basis
  * und gibt den Zahlenwert zurück
  */
-int getNumericIntBase(char * digits, int basis) {
+long int getNumericIntBase(char * digits, long int basis) {
 	if (!reverseCharPoolInitialized) {
 		fprintf(stderr, "Es fehlt ein Aufruf von initReverseCharPool()! \n");
 	}
@@ -98,28 +112,39 @@ int getNumericIntBase(char * digits, int basis) {
 	// Wie lang ist die Zahl? (0-terminierter String...)
 	int length = 0;
 	while ((digits[length] != 0) && (length < MAX_LENGTH)) length++;
+		// printf("Die symbolische Zahl %s ist %d Stellen lang.\n", digits, length);
 
-	int retval = 0;
+	long int retval = 0;
+	long int prevRetval = 0;
 	for (i=0; i<length; i++) {
-		int stellenwert = pow(basis, (length-i-1));
-
 		char symbol = digits[i];
 		if (symbol == '-') {
 			negative = -1;
 			continue;
 		}
 
+		long int stellenwert = pow(basis, (length-i-1));
+			// printf("Der Stellenwert an %d ist %lu.\n", i, stellenwert);
+
 		int ziffernwert = reverseCharPool[(int)symbol];
 		// Fehlerbehandlung:
 		if (ziffernwert >= basis) {
-			fprintf(stderr, "Die Ziffer '%c' ist im Zahlensystem zur Basis %d nicht erlaubt!\n", symbol, basis);
+			fprintf(stderr, "Die Ziffer '%c' ist im Zahlensystem zur Basis %lu nicht erlaubt!\n", symbol, basis);
 			ziffernwert = 0;
 		}
 
+		prevRetval = retval;
 		retval += ziffernwert*stellenwert;
+			// printf("Summiere: %lu\n", retval);
+		if (prevRetval > retval) {
+			fprintf(stderr, "long int Overflow nach %d Stellen von %s!\n", i+1, digits);
+			exit(255);
+		}
 	}
 
+		// printf("retval vor dem ggf. Negieren: %ld\n", retval);
 	if (negative) retval *= -1;
+		// printf("retval nach dem ggf. Negieren: %ld\n", retval);
 	return retval;
 }
 
@@ -129,15 +154,16 @@ int getNumericIntBase(char * digits, int basis) {
  * wandelt z in eine String-Repräsentation im Zahlensystem zur Basis
  * basis um
  */
-char* getSymbolicIntBase(int z, int basis) {
+char* getSymbolicIntBase(long int z, int basis) {
 
 	char digits[MAX_LENGTH];
 	static char retval[MAX_LENGTH];
 
-	int remainder = z;
+	long int remainder = z;
 	if (z < 0) remainder = -z;
 
-	int cursor = 0, modulo = 0;
+	int cursor = 0;
+	long int modulo = 0;
 	while (remainder > 0) {
 		modulo = remainder % basis;
 		digits[cursor] = modulo;
