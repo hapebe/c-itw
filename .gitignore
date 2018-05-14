@@ -5,3 +5,11 @@
 # Geany project files:
 it5.dev
 it5.layout
+# Compiled Linux binaries:
+zahlensysteme
+baseconv
+basis-rechner
+string-eingabe
+taschenrechner-linux
+testTextEingabe
+viele-zahlen
