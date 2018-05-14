@@ -156,6 +156,8 @@ void prettyPrint(long int zahl, int basis, int includeSuffix) {
 	}
 }
 
+
+
 int main(int argc, char *argv[]) {
 	// debugging();
 
