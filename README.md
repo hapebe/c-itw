@@ -46,7 +46,8 @@ Quicksort ist bei diesen Bedingungen also bereits mehr als 300mal schneller.
 
 Es war spannend - spannender, als ich ursprünglich dachte. Das Handling von symbolischen Zahlen (also Strings, also Null-terminierte char-Arrays) in Verbindung mit Funktionen war ein Erlebnis. Im Endeffekt ist hier ein "Standard-Programm" entstanden, dass ich vielleicht ja wirklich mal nutzen kann: [baseconv.c](baseconv.c).
 
-### Exkursion dazu: (git-Branching)[git-basics.md]
+### Exkursion dazu: git-Branching
+_Siehe auch: [git-basics.md](git-basics.md)_
 Anlass bzw. Vorhaben dazu: In das Programm [baseconv](baseconv.c) eine Kommandozeilen-Option einbauen, mit dem sich das "menschenlesbare" Gruppieren von Ziffern einschalten lässt. Weil ich das mit dem/n include(s) für "getopt()" umsetzen will, möchte ich nebenher die "saubere" Programmversion erhalten. Also: Branch!
 
 ## Ideen, ToDos, Projekte
