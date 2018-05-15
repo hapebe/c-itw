@@ -6,7 +6,7 @@
  * Ziffern-Basen
  */
 
-// did you know: eine unsigned long int-Zahl kann man mit printf so
+// did you know: eine unsigned long long int-Zahl kann man mit printf so
 // ausgeben:
 // printf("%llu", 285212672);
 

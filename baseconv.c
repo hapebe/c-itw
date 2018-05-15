@@ -23,12 +23,7 @@
 #include <string.h> // für strcmp()
 #include "lib/baseconv.c"
 
-void debugging(void) {
-	printf("2^32= %lu\n", pow(2,32));
-	printf("2^62= %lu\n", pow(2,62));
-	// printf("2^63= %lu\n", pow(2,63));
-	// printf("2^64= %lu\n", pow(2,64));
-}
+void debugging(void);
 
 int main(int argc, char *argv[]) {
 	// debugging();
@@ -79,5 +74,12 @@ int main(int argc, char *argv[]) {
 		int basis = getNumericIntBase(argv[3], 10);
 		printf("%s\n", getSymbolicIntBase(z, basis));
 	}
+}
+
+void debugging(void) {
+	printf("2^32= %lu\n", pow(2,32));
+	printf("2^62= %lu\n", pow(2,62));
+	// printf("2^63= %lu\n", pow(2,63));
+	// printf("2^64= %lu\n", pow(2,64));
 }
 

@@ -6,11 +6,13 @@
 it5.dev
 it5.layout
 # Compiled Linux binaries:
-zahlensysteme
 baseconv
 basis-rechner
+main
+minimum
+mittelwert
 string-eingabe
 taschenrechner-linux
 testTextEingabe
 viele-zahlen
-minimum
+zahlensysteme
