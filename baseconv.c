@@ -21,38 +21,120 @@
 
 #include <stdio.h>
 #include <string.h> // for strcmp()
+
+#ifdef _WIN32
+#include "lib/wingetopt/getopt.h" // for getopt() replacement - see https://github.com/alex85k/wingetopt
+#endif
+
+#ifdef __linux__
 #include <unistd.h> // for getopt()
+#endif
+
 #include "lib/baseconv.c"
 // #include "lib/dump.c" // debug output char-Arrays using dump(char[]);
-
-
-void usage() {
-	fprintf(stderr, "baseconv is a simple program made for educational purposes of its\n");
-	fprintf(stderr, "author. It can read and write integer numbers (in a range of \n");
-	fprintf(stderr, "-2^63-1..2^63-1) in numeric symbolic notations with bases from 2..36. \n");
-	fprintf(stderr, "WARNING: It does not have adequate error handling!\n\n");
-	fprintf(stderr, "Usage:\n\n");
-	fprintf(stderr, "baseconv [-h] <decimal number>\n");
-	fprintf(stderr, "   Prints the given number in different notation systems.\n");
-	fprintf(stderr, "baseconv [-h] <number> <base>\n");
-	fprintf(stderr, "   Parses the given number in symbolic notation system with base\n");
-	fprintf(stderr, "   and prints it in different notation systems. The base must be\n");
-	fprintf(stderr, "   given in decimal notation.\n");
-	fprintf(stderr, "baseconf [-h] <number> <base> <target base>\n");
-	fprintf(stderr, "   Parses the given number in symbolic notation system with base\n");
-	fprintf(stderr, "   and prints it in the notation system with target base. Both\n");
-	fprintf(stderr, "   base and target base must be given in decimal notation.\n");
-	fprintf(stderr, "\n");
-	fprintf(stderr, "Options:\n");
-	fprintf(stderr, "   -h   human-readable output: adds group separators to the number\n");
-	fprintf(stderr, "        output\n");
-	fprintf(stderr, "\n");
-}
 
 // can be altered via command line option "-h"
 int useDigitGrouping = 0;
 
+void usage();
 void debugging(void);
+void groupDigits(char*, char*, int);
+void ungroupDigits(char*, char*);
+void prettyPrint(long int, int, int);
+
+
+int main(int argc, char *argv[]) {
+	// debugging();
+
+	// check for command line options:
+	int optionCount = 0;
+	int result = getopt(argc, argv, "h?0123456789");
+	if (result != -1) {
+		optionCount ++;
+		switch((char)result) {
+			case '-':
+				break; // simply ignore...
+			case 'h':
+				useDigitGrouping = -1;
+				break;
+			case '?':
+				usage();
+				return 0;
+			case '0': case '1': case '2': case '3': case '4':
+			case '5': case '6': case '7': case '8': case '9':
+				// no, this is a negativ number instead:
+				optionCount --;
+				break;
+			default:
+				fprintf(stderr, "Unrecognized option '%c'\n", result);
+		}
+	}
+
+	// optionCount holds the number of command line args starting with "-",
+	// while paramCount holds the number of args NOT starting with "-".
+	int paramCount = argc -1 -optionCount;
+	char* params[paramCount];
+	params[0] = argv[0];
+	int i;
+	for (i=1; i<=paramCount; i++) {
+		params[i] = argv[i+optionCount];
+	}
+		// for (i=0; i<=paramCount; i++) printf("[%d] = %s\n", i, params[i]);
+
+	if (paramCount < 1 || ((argc == 2) && !strcmp(argv[1], "--help"))) {
+		// print usage:
+		usage();
+		return 0;
+	}
+
+	initReverseCharPool(); // function in lib/baseconv.c
+
+	// we already made sure we have at least one parameter
+	// support for grouped numbers: sanitize the first parameter:
+	char cleanDigits[MAX_LENGTH * 2];
+	ungroupDigits(params[1], cleanDigits);
+		// dump(cleanDigits);
+
+	if (paramCount == 1) {
+		// nur eine Zahl wurde eingegeben -> Dezimal in mehrere:
+		long int z = getNumericIntBase(cleanDigits, 10);
+
+		int basen[] = {2, 3, 4, 5, 8, 10, 16, 36};
+		int i;
+		for (i=0; i<8; i++) {
+			int basis = basen[i];
+			if (basis == 10) continue;
+			prettyPrint(z, basis, -1); // -1 for: include suffix
+		}
+
+	} else if (paramCount == 2) {
+		// zwei Zahlen: ein System in mehrere:
+		int zBasis = getNumericIntBase(params[2], 10);
+		long int z = getNumericIntBase(cleanDigits, zBasis);
+
+		int basen[] = {2, 3, 4, 5, 8, 10, 16, 36};
+		int i;
+		for (i=0; i<8; i++) {
+			int basis = basen[i];
+			// if (basis == zBasis) continue;
+			prettyPrint(z, basis, -1); // -1 for: include suffix
+		}
+	} else if (paramCount == 3) {
+		// drei Zahlen: Z, Basis, Ziel-Basis
+		int zBasis = getNumericIntBase(params[2], 10);
+		long int z = getNumericIntBase(cleanDigits, zBasis);
+		int basis = getNumericIntBase(params[3], 10);
+
+		prettyPrint(z, basis, 0); // 0 for: don't include suffix
+	}
+}
+
+void debugging(void) {
+	printf("2^32= %lu\n", pow(2,32));
+	printf("2^62= %lu\n", pow(2,62));
+	// printf("2^63= %lu\n", pow(2,63));
+	// printf("2^64= %lu\n", pow(2,64));
+}
 
 void groupDigits(char* source, char* dest, int groupSize) {
 
@@ -151,98 +233,26 @@ void prettyPrint(long int zahl, int basis, int includeSuffix) {
 	}
 }
 
-
-
-int main(int argc, char *argv[]) {
-	// debugging();
-
-	// check for command line options:
-	int optionCount = 0;
-	int result = getopt(argc, argv, "h?0123456789");
-	if (result != -1) {
-		optionCount ++;
-		switch((char)result) {
-			case '-':
-				break; // simply ignore...
-			case 'h':
-				useDigitGrouping = -1;
-				break;
-			case '?':
-				usage();
-				return 0;
-			case '0': case '1': case '2': case '3': case '4':
-			case '5': case '6': case '7': case '8': case '9':
-				// no, this is a negativ number instead:
-				optionCount --;
-				break;
-			default:
-				fprintf(stderr, "Unrecognized option '%c'\n", result);
-		}
-	}
-
-	// optionCount holds the number of command line args starting with "-",
-	// while paramCount holds the number of args NOT starting with "-".
-	int paramCount = argc -1 -optionCount;
-	char* params[paramCount];
-	params[0] = argv[0];
-	int i;
-	for (i=1; i<=paramCount; i++) {
-		params[i] = argv[i+optionCount];
-	}
-		// for (i=0; i<=paramCount; i++) printf("[%d] = %s\n", i, params[i]);
-
-	if (paramCount < 1 || ((argc == 2) && !strcmp(argv[1], "--help"))) {
-		// print usage:
-		usage();
-		return 0;
-	}
-
-	initReverseCharPool(); // function in lib/baseconv.c
-
-	// we already made sure we have at least one parameter
-	// support for grouped numbers: sanitize the first parameter:
-	char cleanDigits[MAX_LENGTH * 2];
-	ungroupDigits(params[1], cleanDigits);
-		// dump(cleanDigits);
-
-	if (paramCount == 1) {
-		// nur eine Zahl wurde eingegeben -> Dezimal in mehrere:
-		long int z = getNumericIntBase(cleanDigits, 10);
-
-		int basen[] = {2, 3, 4, 5, 8, 10, 16, 36};
-		int i;
-		for (i=0; i<8; i++) {
-			int basis = basen[i];
-			if (basis == 10) continue;
-			prettyPrint(z, basis, -1); // -1 for: include suffix
-		}
-
-	} else if (paramCount == 2) {
-		// zwei Zahlen: ein System in mehrere:
-		int zBasis = getNumericIntBase(params[2], 10);
-		long int z = getNumericIntBase(cleanDigits, zBasis);
-
-		int basen[] = {2, 3, 4, 5, 8, 10, 16, 36};
-		int i;
-		for (i=0; i<8; i++) {
-			int basis = basen[i];
-			// if (basis == zBasis) continue;
-			prettyPrint(z, basis, -1); // -1 for: include suffix
-		}
-	} else if (paramCount == 3) {
-		// drei Zahlen: Z, Basis, Ziel-Basis
-		int zBasis = getNumericIntBase(params[2], 10);
-		long int z = getNumericIntBase(cleanDigits, zBasis);
-		int basis = getNumericIntBase(params[3], 10);
-
-		prettyPrint(z, basis, 0); // 0 for: don't include suffix
-	}
-}
-
-void debugging(void) {
-	printf("2^32= %lu\n", pow(2,32));
-	printf("2^62= %lu\n", pow(2,62));
-	// printf("2^63= %lu\n", pow(2,63));
-	// printf("2^64= %lu\n", pow(2,64));
+void usage() {
+	fprintf(stderr, "baseconv is a simple program made for educational purposes of its\n");
+	fprintf(stderr, "author. It can read and write integer numbers (in a range of \n");
+	fprintf(stderr, "-2^63-1..2^63-1) in numeric symbolic notations with bases from 2..36. \n");
+	fprintf(stderr, "WARNING: It does not have adequate error handling!\n\n");
+	fprintf(stderr, "Usage:\n\n");
+	fprintf(stderr, "baseconv [-h] <decimal number>\n");
+	fprintf(stderr, "   Prints the given number in different notation systems.\n");
+	fprintf(stderr, "baseconv [-h] <number> <base>\n");
+	fprintf(stderr, "   Parses the given number in symbolic notation system with base\n");
+	fprintf(stderr, "   and prints it in different notation systems. The base must be\n");
+	fprintf(stderr, "   given in decimal notation.\n");
+	fprintf(stderr, "baseconf [-h] <number> <base> <target base>\n");
+	fprintf(stderr, "   Parses the given number in symbolic notation system with base\n");
+	fprintf(stderr, "   and prints it in the notation system with target base. Both\n");
+	fprintf(stderr, "   base and target base must be given in decimal notation.\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "Options:\n");
+	fprintf(stderr, "   -h   human-readable output: adds group separators to the number\n");
+	fprintf(stderr, "        output\n");
+	fprintf(stderr, "\n");
 }
 

@@ -5,6 +5,8 @@
 # Geany project files:
 it5.dev
 it5.layout
+# 3rd party libraries:
+lib/wingetopt/**
 # Compiled Linux binaries:
 baseconv
 basis-rechner
