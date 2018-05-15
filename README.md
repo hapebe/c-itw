@@ -65,3 +65,7 @@ Anlass bzw. Vorhaben dazu: In das Programm [baseconv](baseconv.c) eine Kommandoz
 * in den Quellcode der GNU core-utils schauen (dort gibt es ja u.a. auch den sort-Befehl...)
 * mal über GUI-Programmierung mit GTK / QT (oder wie sie alle heißen...) nachlesen und vielleicht ein paar Fingerübungen machen
 * über make / Makefile etc. lesen und damit experimentieren (sowas gibt es u.a. ja auch bei den klassischen German-Atlantis-Quellen...)
+* in Richtung "Schiffe versenken" als Projekt im itw-Unterricht: den Source-Code von "gnome-mines" studieren, dort etwas über die Oberflächen-Programmierung
+  * hmmm, stellt sich heraus, dass gnome-mines in Vala geschrieben ist - das ist wohl eine Sprache, die ihren Code wiederum nach C kompiliert, aber für meine Zwecke kommt mir das erstmal zu kompliziert vor. :-(
+  * also anderweitig: [https://www.quora.com/How-do-I-create-a-beautiful-GUI-in-C-Linux]
+  * Lese-Stoff: [https://developer.gnome.org/gtk-tutorial/stable/]

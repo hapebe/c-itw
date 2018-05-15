@@ -10,6 +10,7 @@ lib/wingetopt/**
 # Compiled Linux binaries:
 baseconv
 basis-rechner
+hexSumme
 main
 minimum
 mittelwert
@@ -18,3 +19,5 @@ taschenrechner-linux
 testTextEingabe
 viele-zahlen
 zahlensysteme
+gtk-experimente/first
+gtk-experimente/second
