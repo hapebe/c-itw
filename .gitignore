@@ -8,6 +8,7 @@ it5.layout
 # 3rd party libraries:
 lib/wingetopt/**
 # Compiled Linux binaries:
+array-zeiger
 baseconv
 basis-rechner
 hexSumme
@@ -19,5 +20,11 @@ taschenrechner-linux
 testTextEingabe
 viele-zahlen
 zahlensysteme
+zeiger
 gtk-experimente/first
 gtk-experimente/second
+gtk-experimente/third
+gtk-experimente/table0
+gtk-experimente/schiffe0
+# possibly copyrighted artwork:
+gtk-experimente/sea.xpm

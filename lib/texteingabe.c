@@ -201,24 +201,38 @@ int strpos(char needle, char* haystack) {
 /**
  * spezialisierte Eingabe-Funktion laut Aufgabe am 15.05.2018
  *
- * akzeptiert positive und negative Fließkomma- und Ganzzahlen mit einer
+ * Akzeptiert positive und negative Fließkomma- und Ganzzahlen mit einer
  * festgelegten maximalen Anzahl Vor- und Nachkommastellen.
  *
- * akzeptiert kein führendes Komma
+ * Akzeptiert kein führendes Komma (ggf. muss eine Null vor dem Komma
+ * eingegeben werden).
  */
 double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
+	// Nach längerem Überlegen könnte man die Gültigkeit der Zahl
+	// während und am Ende der Eingabe auch mit regulären Ausdrücken
+	// überprüfen - wobei die Beschränkung der Anzahl Stellen noch nicht
+	// berücksichtigt ist. Die Akzeptanz-Prüfung, wenn ein Zeichen
+	// eingegeben wird bzw. die Eingabe abgeschlossen werden soll,
+	// würde sich allerdings vereinfachen.
+	//
+	// Gültigkeit einer Eingabe (Zeichen oder Backspace):
+	// (^$)|(^-$)|^-?(0|([1-9]+[0-9]*))([,\.][0-9]*)?$
+	//
+	// Gültigkeit der kompletten Eingabe:
+	// ^-?(0|([1-9]+[0-9]*))([,\.][0-9]+)?$
+
 	if (maxVorKommaStellen < 1) {
 		fprintf(stderr, "Es muss mindestens eine Vorkomma-Stelle erlaubt sein.");
 		exit(1);
 	}
 
-	int maxLength = maxVorKommaStellen + maxNachKommaStellen + 2;
+	int maxLength = maxVorKommaStellen + maxNachKommaStellen + 2; // 1 fürs Minus, 1 fürs Komma
 		// keine Buffer-Overruns akzeptieren: ggf. maxLength beschränken:
 		if (maxLength > TEXTEINGABE_BUFFER_SIZE - 1) maxLength = TEXTEINGABE_BUFFER_SIZE - 1;
 
 	static char buffer[TEXTEINGABE_BUFFER_SIZE]; // 1 char mehr, für die \0 am Ende
 	int i=0;
-	// den Puffer löschen, sicher ist sicher...
+	// den Puffer initialisieren, sicher ist sicher...
 	for (i=0; i<TEXTEINGABE_BUFFER_SIZE; i++) buffer[i] = '\0';
 
 
@@ -236,10 +250,18 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 
 		c = getch();
 
-		// Auf Steuerzeichen prüfen:
+		// Zeichen-"Klasse" prüfen:
 		if (c == 13 || c == 10) {
-			// Eingabe abschließen
-			if (textEingabeAcceptEmpty || cursor > 0) break;
+			// Return - Eingabe abschließen?
+			if (cursor == 0) {
+				if (textEingabeAcceptEmpty) break;
+			} else {
+				// nicht-leere Eingabe:
+				int okay = -1;
+				if (strpos('-', buffer) == cursor - 1) okay = 0; // Minus-Zeichen am Ende ist nicht erlaubt
+				if (strpos('.', buffer) == cursor - 1) okay = 0; // Komma am Ende ist nicht erlaubt
+				if (okay) break;
+			}
 		} else if (c == 8 || c == 127) {
 			// Backspace
 			if (cursor > 0) {
@@ -264,9 +286,9 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 				}
 				#endif
 
-				// nach der grafischen Umsetzung - auch in der Datenstruktur umsetzen:
+				// nach der grafischen Umsetzung auch in der Datenstruktur umsetzen:
 				cursor --; // Cursor eins in Richtung Anfang,
-				buffer[cursor] = 0; // kein Zeichen an der Cursor-Position
+				buffer[cursor] = '\0'; // kein Zeichen an der Cursor-Position
 			}
 		} else if (setContainsAtom(NEGATIV_ZEICHEN, c) && cursor == 0) {
 			// Minus-Zeichen an erster Stelle ist okay:
@@ -274,11 +296,11 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 			buffer[cursor] = c;
 			cursor ++;
 		} else if (cursor < maxLength) {
-			// also ein normales Text-Zeichen, und die Länge ist unter Maximum:
+			// also ein Text-Zeichen, und die Länge ist unter Maximum:
 
 			// wenn das Zeichen erlaubt ist:
 			if (setContainsAtom(DEZIMAL_ZIFFERN, c)) {
-				int okay = -1;
+				int okay = -1; // erstmal davon ausgehen, dass das Zeichen akzeptabel ist
 				if (kommaPos < 0) {
 					// es wäre eine Vorkommastelle:
 					if (vorKommaStellen >= maxVorKommaStellen) okay = 0;
@@ -287,6 +309,7 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 					if (nachKommaStellen >= maxNachKommaStellen) okay = 0;
 				}
 				if (fuehrendeNull && kommaPos < 0) okay = 0; // Ziffer würde ohne Komma auf führende Null folgen...
+
 				if (okay) {
 					// das Zeichen wird angehängt:
 					printf("%c", c);
@@ -307,7 +330,7 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 				buffer[cursor] = c;
 				cursor ++;
 			} else {
-				// nop - das Zeichen ignorieren
+				// nop - anderes Zeichen, ignorieren
 			}
 		} // Ende Klassen-Unterscheidung der Eingabe
 
@@ -327,7 +350,7 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 		}
 		if (istNegativ) vorKommaStellen --;
 
-	} // Auf das nächste Eingabezeichen warten
+	} // Schleife: Auf das nächste Eingabezeichen warten
 
 	// Eingabe abschließen:
 	printf("\n");
@@ -354,7 +377,7 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 		// if (vordersteZiffer <= hintersteZiffer) printf("Nachkomma-Teil von %d bis %d...\n", vordersteZiffer, hintersteZiffer);
 	stellenWert = 1.0/10.0d;
 	for (i=vordersteZiffer; i <= hintersteZiffer; i++) {
-		retval += ((int)buffer[i]-48) * stellenWert; // Ziffer an #(kommaPos+1)+i
+		retval += ((int)buffer[i]-48) * stellenWert; // Ziffer an Position i
 		stellenWert /= 10.0d; // ein Stelle nach rechts...
 	}
 

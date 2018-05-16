@@ -11,6 +11,15 @@ void hello(GtkWidget* widget, gpointer data){
 	g_print("Hello World\n");
 }
 
+void handleMotionNotify(GtkWidget* widget, GdkEvent *event, gpointer data) {
+	g_print("motion_notify_event\n");
+}
+
+void handleKeyPress(GtkWidget* widget, GdkEvent *event, gpointer data) {
+	g_print("Key pressed...\n");
+}
+
+
 gint delete_event_handler(GtkWidget* widget, GdkEvent* event, gpointer data){
     /* If you return FALSE in the "delete-event" signal handler,
      * GTK will emit the "destroy" signal. Returning TRUE means
@@ -35,6 +44,8 @@ int main(int argc, char *argv[]){
 
 	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(delete_event_handler), NULL);
 	g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(destroy), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(handleKeyPress), NULL);
+	g_signal_connect(G_OBJECT(window), "motion_notify_event", G_CALLBACK(handleMotionNotify), NULL);
 
 	gtk_container_set_border_width(GTK_CONTAINER(window), 10);
 

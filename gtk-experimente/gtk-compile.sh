@@ -33,4 +33,8 @@ gcc $1.c -o $1 \
 -lfreetype
 # output of:
 # `pkg-config --cflags --libs gtk+-2.0`
-./$1 &
+if [ $? -eq 0 ] ; then
+	./$1 &
+else
+	echo "Compile failed!"
+fi
