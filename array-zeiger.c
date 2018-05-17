@@ -29,7 +29,6 @@ void intInArrayEingeben(int* zahlen, int anzahl) {
 		// zahlen[i] = (int)fliesskommaEingabe(16,0);
 
 		// Variante, den Zeiger zu inkrementieren und zu dereferenzieren:
-		*zahlen =  (int)fliesskommaEingabe(16,0); // aus lib/texteingabe.c
-		zahlen ++; // Zeiger auf die nächste "Zelle" des Arrays setzen
+		*(zahlen+i) =  (int)fliesskommaEingabe(16,0); // aus lib/texteingabe.c
 	}
 }

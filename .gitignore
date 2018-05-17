@@ -2,6 +2,7 @@
 *.o
 *.log
 **/*-zahlen-eingabe
+.~lock**
 # Geany project files:
 it5.dev
 it5.layout
@@ -19,6 +20,7 @@ string-eingabe
 taschenrechner-linux
 testTextEingabe
 viele-zahlen
+zahlen-reihe
 zahlensysteme
 zeiger
 gtk-experimente/first

@@ -149,7 +149,6 @@ char * textEingabeEinZeichenOhneEcho(void) {
 	} // Auf das nächste Eingabezeichen warten
 
 	buffer[cursor] = '\0'; // Wir bauen ordentliche 0-terminierte Strings...
-	printf("\n");
 
 	return &buffer[0];
 }
