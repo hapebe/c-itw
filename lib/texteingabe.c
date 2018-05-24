@@ -114,7 +114,8 @@ char * texteingabeLength(int maxLength) {
 	int pos = 0, i;
 	for (i=32;i<127;i++) {
 		// alle ASCII-Zeichen mit Codes zwischen 32 und 126 sind erlaubt
-		allowedCharSet[pos] = i; pos++;
+		allowedCharSet[pos] = i;
+		pos++;
 	}
 	// TODO noch Umlaute etc. hinzufügen...
 	allowedCharSet[pos] = 0; // 0-terminiert...

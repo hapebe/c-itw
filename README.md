@@ -48,7 +48,24 @@ Es war spannend - spannender, als ich ursprünglich dachte. Das Handling von sym
 
 ### Exkursion dazu: git-Branching
 _Siehe auch: [git-basics.md](git-basics.md)_
+
 Anlass bzw. Vorhaben dazu: In das Programm [baseconv](baseconv.c) eine Kommandozeilen-Option einbauen, mit dem sich das "menschenlesbare" Gruppieren von Ziffern einschalten lässt. Weil ich das mit dem/n include(s) für "getopt()" umsetzen will, möchte ich nebenher die "saubere" Programmversion erhalten. Also: Branch!
+
+## struct, Strings und allerlei Eingabe-Magie
+Besonders das Hantieren mit Strings in der 
+"Wild-West"-Speicher-Verwaltungs-Philosophie von C kommt mir aufwändig und 
+gefährlich vor - letzteres stimmt ja wohl auch, wenn ich an 
+"Buffer Overflow"-Sicherheits-Probleme denke, die wohl oft mit C verbunden 
+sind. Ersteres stimmt wahrscheinlich auch ganz allgemein, allerdings eben 
+nur zur Entwurfs-Zeit - bei der Ausführung spart das Wegfallen sämtlicher 
+automatischer Tests im Hintergrund anderer (Sprach-)Systeme vermutlich für
+schnellere Ausführung. ABER - es ist wirklich anstrengend, über diese 
+"niederen" Aufgaben nachzudenken...
+
+Neueste Entdeckung ansonsten: Die Funktion isatty() aus unistd.h, mit deren
+Hilfe ich unterscheiden kann, ob die Standard-Eingabe "interaktiv" von der
+Konsole stammt oder aus einer umgelenkten Datei bzw. einer "Pipe". Beispiel 
+siehe: [struct1.c]
 
 ## Ideen, ToDos, Projekte
 * erledigt: QuickSort implementieren (http://www.zentut.com/c-tutorial/c-quicksort-algorithm/)
