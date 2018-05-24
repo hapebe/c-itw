@@ -65,7 +65,7 @@ schnellere Ausführung. ABER - es ist wirklich anstrengend, über diese
 Neueste Entdeckung ansonsten: Die Funktion isatty() aus unistd.h, mit deren
 Hilfe ich unterscheiden kann, ob die Standard-Eingabe "interaktiv" von der
 Konsole stammt oder aus einer umgelenkten Datei bzw. einer "Pipe". Beispiel 
-siehe: [struct1.c]
+siehe: [struct1.c](struct1.c)
 
 ## Ideen, ToDos, Projekte
 * erledigt: QuickSort implementieren (http://www.zentut.com/c-tutorial/c-quicksort-algorithm/)
