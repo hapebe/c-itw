@@ -18,6 +18,22 @@ struct t_klimageraet klimageraete[MAX_GERAETE];
 int statusKlimageraete[MAX_GERAETE];
 int filterKlimageraete[MAX_GERAETE];
 
+void debugPrintStatus() {
+	int i;
+	printf("status:\n");
+	for (i=0; i<MAX_GERAETE; i++) {
+		printf("%d ", statusKlimageraete[i]);
+		if ((i+1) % 10 == 0) printf("\n");
+	}
+	printf("\n");
+	printf("filter:\n");
+	for (i=0; i<MAX_GERAETE; i++) {
+		printf("%d ", filterKlimageraete[i]);
+		if ((i+1) % 10 == 0) printf("\n");
+	}
+	printf("\n");
+}
+
 void eingabeKlimageraet(struct t_klimageraet * geraet) {
 	printf("Modellbezeichnung:\n");
 	strcpy(geraet->modellBezeichnung, texteingabeLength(255));

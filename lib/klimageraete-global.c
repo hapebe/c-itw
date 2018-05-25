@@ -2,8 +2,6 @@
 
 #define die(TEXT) do {printf ("\n\n%s:%d:%s\n", __FILE__, __LINE__, TEXT); exit(255);} while (0);
 
-
-
 #include <stdlib.h> // für atoi() / itoa() / exit()
 #include <ctype.h> // für isspace()
 #include <string.h>
@@ -66,3 +64,4 @@ int eingabeIntGr0(const char * fehlermeldung) {
 
 	return retval;
 }
+

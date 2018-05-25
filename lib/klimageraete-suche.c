@@ -64,8 +64,7 @@ void sucheKaelteLeistung() {
 			filterKlimageraete[i] = FILTER_SICHTBAR;
 		}
 	}
-	debugPrintStatus();
-	warteAufTaste();
+	// debugPrintStatus(); warteAufTaste();
 
 	// fertig - die Anzeige erfolgt in der aufrufenden Funktion
 }

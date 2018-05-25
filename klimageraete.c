@@ -12,7 +12,6 @@ void zeigeHauptMenu(void); // nur Anzeige
 void tabellenMenu(void); // Anzeige und Verarbeitung
 void suchMenu(void); // Anzeige und Verarbeitung
 void zeigeTabelle(void);
-void debugPrintStatus(void);
 void neuesGeraet(); // interaktive Prozedur: neuen Datensatz anlegen
 void ersetzeGeraet(); // interaktive Prozedur: Datensatz ersetzen
 int datensatzWaehlenOderAbbruch(void); // Eingabe-Funktion
@@ -110,6 +109,7 @@ void zeigeTabelle() {
 
 	for (i=0; i<MAX_GERAETE; i++) {
 		if (statusKlimageraete[i] == FREI) continue;
+		if (filterKlimageraete[i] == FILTER_VERSTECKT) continue;
 		printf("%4d ", i);
 		printKlimageraetZeile(&klimageraete[i]);
 	}
@@ -254,23 +254,6 @@ void ersetzeGeraet() {
 	ausgabeKlimageraet(&klimageraete[index]);
 
 	warteAufTaste();
-}
-
-
-void debugPrintStatus() {
-	int i;
-	printf("status:\n");
-	for (i=0; i<MAX_GERAETE; i++) {
-		printf("%d ", statusKlimageraete[i]);
-		if ((i+1) % 10 == 0) printf("\n");
-	}
-	printf("\n");
-	printf("filter:\n");
-	for (i=0; i<MAX_GERAETE; i++) {
-		printf("%d ", filterKlimageraete[i]);
-		if ((i+1) % 10 == 0) printf("\n");
-	}
-	printf("\n");
 }
 
 /**
