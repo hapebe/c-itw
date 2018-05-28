@@ -42,10 +42,11 @@ float eingabePreis() {
 	// globales "Flag" für die Eingabe: keine leere Eingabe akzeptieren:
 	textEingabeAcceptEmpty = 0; // siehe lib/texteingabe.c
 
-	retval = (float)fliesskommaEingabe(9,2);
 	while (retval<0) {
-		printf("Der Preis muss größer als 0 sein.\n");
-		retval = (float)fliesskommaEingabe(9,0);
+		retval = (float)fliesskommaEingabe(9,2);
+		if (retval<0) {
+			printf("Der Preis darf nicht kleiner als 0 sein.\n");
+		}
 	}
 
 	return retval;

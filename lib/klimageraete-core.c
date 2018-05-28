@@ -35,8 +35,15 @@ void debugPrintStatus() {
 }
 
 void eingabeKlimageraet(struct t_klimageraet * geraet) {
-	printf("Modellbezeichnung:\n");
-	strcpy(geraet->modellBezeichnung, texteingabeLength(255));
+	do {
+		printf("Modellbezeichnung:\n");
+		strcpy(geraet->modellBezeichnung, texteingabeLength(255));
+		if (strlen(geraet->modellBezeichnung) == 0) {
+			printf("Die Bezeichnung darf nicht leer sein!\n");
+		} else {
+			break;
+		}
+	} while (-1);
 	printf("Kälteleistung (Watt):\n");
 	geraet->kaelteLeistung = eingabeIntGr0("Die Kälteleistung muss größer als 0 sein, bitte wiederholen:");
 	printf("Stromverbrauch (Watt):\n");
@@ -69,13 +76,17 @@ void writeKlimageraetBHT(char* dest, struct t_klimageraet * geraet) {
 void ausgabeKlimageraet(struct t_klimageraet * geraet) {
 	static char buffer[32];
 	char * ptrBuffer = &buffer[0];
+	static char b2[32];
+	char * ptrB2 = &b2[0];
+
 
 	printf("Modellbezeichnung:      %s\n", geraet->modellBezeichnung);
 	printf("Kälteleistung (Watt):   %18d\n", geraet->kaelteLeistung);
 	printf("Stromverbrauch (Watt):  %18d\n", geraet->stromVerbrauch);
 
 	writeKlimageraetBHT(ptrBuffer, geraet);
-	printf("Abmessungen (BxHxT cm): %s\n", ptrBuffer);
+	linksAuffuellen(ptrB2, ptrBuffer, 18);
+	printf("Abmessungen (BxHxT cm): %s\n", ptrB2);
 
 	printf("Preis (EUR):            %18.2f\n", geraet->preis);
 }

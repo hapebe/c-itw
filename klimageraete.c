@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 			case '4': // suchen
 				suchMenu();
 				break;
-			case '5': case 'q': case 'Q': case 'x': case 'X': case 27:
+			case '5': case 'q': case 'Q': case 'x': case 'X': case 27: case 0:
 				abbruch = -1;
 				break;
 		}
@@ -140,10 +140,19 @@ void suchMenu() {
 		char * auswahl = textEingabeEinZeichenOhneEcho();
 		switch(*auswahl) {
 			case '1':
-				sucheModellBezeichnung(); abbruch = 1;
+				abbruch = sucheModellBezeichnung();
 				break;
 			case '2':
 				sucheKaelteLeistung(); abbruch = 1;
+				break;
+			case '3':
+				sucheElektLeistung(); abbruch = 1;
+				break;
+			case '4':
+				abbruch = sucheAbmessungen();
+				break;
+			case '5':
+				suchePreis(); abbruch = 1;
 				break;
 			case 0: case 'q': case 'Q': case 'x': case 'X': case 27:
 				abbruch = -1;
@@ -161,6 +170,8 @@ void suchMenu() {
 
 		printf("\n");
 		warteAufTaste();
+
+		filterAlleSichtbar(); // Filter wieder entfernen
 	}
 }
 

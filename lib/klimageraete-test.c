@@ -30,7 +30,7 @@ void initTest() {
 	// Zweites:
 	i++;
 	ptr = &klimageraete[i];
-	strcpy(ptr->modellBezeichnung, "DeLonghi Summer-Master Superforte");
+	strcpy(ptr->modellBezeichnung, "DeLonghi Summer-Master Superforte - dies ist ein sehr, sehr langer Text für die Modellbezeichnung, mit dem ich die Auswirkungen eben solcher im Programm testen möchte");
 	ptr->kaelteLeistung = 4000;
 	ptr->stromVerbrauch = 2200;
 	ptr->breite = 70;
