@@ -16,8 +16,10 @@ struct t_klimageraet {
 struct t_klimageraet klimageraete[MAX_GERAETE];
 int filterKlimageraete[MAX_GERAETE];
 
-// forward declaration:
-int istFreiesGeraet(struct t_klimageraet * p);
+// forward declarations:
+int istFreiesGeraet(struct t_klimageraet *);
+int nSichtbareGeraete(void);
+int einzigesSichtbaresGeraet(void);
 
 void debugPrintStatus() {
 	int i;
@@ -64,6 +66,7 @@ void aendereKlimageraet(struct t_klimageraet * geraet) {
 	int temp;
 
 	printf("Bitte geben sie die neuen Daten ein! Wenn Sie eine leere Eingabe machen, wird der bestehende Wert übernommen.\n\n");
+	textEingabeAcceptEmpty = -1;
 
 	printf("Modellbezeichnung (ist: %s):\n", geraet->modellBezeichnung);
 	ptrPuffer = texteingabeLength(255);
@@ -213,10 +216,23 @@ int istFreiesGeraet(struct t_klimageraet * p) {
  * ermöglicht die Auswahl einer gültigen Datensatznummer, oder Abbruch bei leerer Eingabe:
  * @return gültiger Index von klimageraete[] oder -1 für Abbruch
  */
-int datensatzWaehlenOderAbbruch(void) {
+int datensatzWaehlenOderAbbruch(char * prompt) {
+	// Sonderfall behandeln: Wenn es nur genau ein Gerät gibt, gilt
+	// dieses automatisch als ausgewählt, ABER: Abbruch muss möglich sein -
+	// also eine Art Bestätigungsabfrage...
+	if (nSichtbareGeraete() == 1) {
+		int index = einzigesSichtbaresGeraet();
+
+		if (confirm("\nMeinen Sie dieses Gerät (j/n)? ") == 0) return -1; // Abbruch
+
+		return index;
+	}
+
+
 	static char buffer[32];
 	char * ptrBuffer = &buffer[0];
 
+	printf("%s", prompt);
 	do {
 		fgets(ptrBuffer, 31, stdin);
 		// dump(trim(ptrBuffer)); warteAufTaste(); // DEBUG
@@ -258,6 +274,25 @@ int nSichtbareGeraete(void) {
 		if (!istFreiesGeraet(&klimageraete[i]) && filterKlimageraete[i] == FILTER_SICHTBAR) n++;
 	}
 	return n;
+}
+
+/**
+ * @return index des einzigen sichtbaren Gerätes, wenn es denn tatsächlich nur eines gibt - sonst DIE!
+ */
+int einzigesSichtbaresGeraet(void) {
+	int n = 0;
+	int retval = -1;
+
+	int i;
+	for (i=0; i<MAX_GERAETE; i++) {
+		if (!istFreiesGeraet(&klimageraete[i]) && filterKlimageraete[i] == FILTER_SICHTBAR) {
+			retval = i;
+			n++;
+		}
+	}
+
+	if (n != 1) die("einzigesSichtbaresGeraet(): Fehler - es gibt nicht genau ein sichtbares Gerät!");
+	return retval;
 }
 
 /**

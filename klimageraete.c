@@ -1,4 +1,5 @@
-#define DEBUG -1
+// zum Abschalten unbedingt AUSKOMMENTIEREN, nicht auf 0 setzen oder so!
+#define DEBUG 1
 
 #include "lib/klimageraete-global.c"
 #include "lib/klimageraete-core.c" // alles, was direkt die Verarbeitung des Typs "t_klimageraet" betrifft
@@ -103,24 +104,15 @@ void hauptMenu() {
 }
 
 void zeigeTabelle() {
-	if (nGeraete() <= 0) {
-		printf("   (Es sind keine Geraete verfügbar...)\n");
-		return;
-	}
 	if (nSichtbareGeraete() <= 0) {
 		printf("   (Es gibt keine Suchergebnisse...)\n");
 		return;
 	}
 
-	int i;
+	// Sonderfall: wenn nur eins vorhanden, direkt die Details anzeigen
 	if (nSichtbareGeraete() == 1) {
-		// Sonderfall: direkt die Details anzeigen
-		for (i=0; i<MAX_GERAETE; i++) {
-			if (istFreiesGeraet(&klimageraete[i])) continue;
-			if (filterKlimageraete[i] == FILTER_VERSTECKT) continue;
-			ausgabeKlimageraet(&klimageraete[i]);
-			return;
-		}
+		ausgabeKlimageraet( &klimageraete[ einzigesSichtbaresGeraet() ] );
+		return;
 	}
 
 	printf("   # ");
@@ -130,6 +122,7 @@ void zeigeTabelle() {
 	printf("====|");
 	printKlimageraetZeilenSeparator();
 
+	int i;
 	for (i=0; i<MAX_GERAETE; i++) {
 		if (istFreiesGeraet(&klimageraete[i])) continue;
 		if (filterKlimageraete[i] == FILTER_VERSTECKT) continue;
@@ -142,6 +135,13 @@ void zeigeTabelle() {
 }
 
 void suchMenu() {
+	if (nGeraete() == 0) {
+		cls();
+		printf("Es sind keine Geräte zum Suchen vorhanden.\n\n");
+		warteAufTaste();
+		return;
+	}
+
 	int abbruch = 0;
 	do {
 
@@ -164,6 +164,8 @@ void suchMenu() {
 		switch(*auswahl) {
 			case '1':
 				abbruch = sucheModellBezeichnung();
+				// kann -1 zurückgeben: Suche abbrechen
+				// kann 1 zurückgeben: Suche ausführen
 				break;
 			case '2':
 				sucheKaelteLeistung(); abbruch = 1;
@@ -173,6 +175,8 @@ void suchMenu() {
 				break;
 			case '4':
 				abbruch = sucheAbmessungen();
+				// kann -1 zurückgeben: Suche abbrechen
+				// kann 1 zurückgeben: Suche ausführen
 				break;
 			case '5':
 				suchePreis(); abbruch = 1;
@@ -198,15 +202,27 @@ void suchMenu() {
 	}
 }
 
-
 void tabellenMenu() {
-	while(-1) {
+	int n = nSichtbareGeraete();
+
+	if (n < 1) {
+		cls();
+		printf("   (Es sind keine Geraete verfügbar...)\n");
+		warteAufTaste();
+		return;
+	}
+
+	do {
 		cls();
 		zeigeTabelle();
 
-		printf("\nAktionen: <RETURN> zurück; #Zahl: Details anzeigen\n:");
-		int index = datensatzWaehlenOderAbbruch();
-		if (index == -1) break;
+		int index = -1;
+		if (n > 1) {
+			index = datensatzWaehlenOderAbbruch("\nAktionen: <RETURN> zurück; Zahl: Details von # anzeigen\n:");
+			if (index == -1) break;
+		} else if (n == 1) {
+			index = einzigesSichtbaresGeraet();
+		}
 
 		// okay, Detail-Ausgabe:
 		cls();
@@ -214,7 +230,7 @@ void tabellenMenu() {
 		ausgabeKlimageraet(&klimageraete[index]);
 		printf("\n");
 		warteAufTaste();
-	}
+	} while (nSichtbareGeraete() > 1); // nur dann wiederholen, wenn es tatsächlich eine Auswahl gibt
 }
 
 void neuesGeraet() {
@@ -243,11 +259,14 @@ void neuesGeraet() {
 
 void ersetzeGeraet() {
 	cls();
+	if (nGeraete() == 0) {
+		printf("Es sind keine Geräte zum Ersetzen vorhanden.\n\n");
+		warteAufTaste();
+		return;
+	}
 
 	zeigeTabelle();
-	printf("\nWelches Gerät wollen Sie ersetzen? Bitte geben die die Nummer (#) ein:\n");
-	int index=datensatzWaehlenOderAbbruch();
-
+	int index=datensatzWaehlenOderAbbruch("\nWelches Gerät wollen Sie ersetzen? Bitte geben die die Nummer (#) ein:\n");
 	if (index == -1) return; // undokumentiert: Abbruch
 
 	// Meldung
@@ -266,11 +285,14 @@ void ersetzeGeraet() {
 
 void aendereGeraet() {
 	cls();
+	if (nGeraete() == 0) {
+		printf("Es sind keine Geräte zum Ändern vorhanden.\n\n");
+		warteAufTaste();
+		return;
+	}
 
 	zeigeTabelle();
-	printf("\nWelches Gerät wollen Sie bearbeiten? Bitte geben die die Nummer (#) ein:\n");
-	int index=datensatzWaehlenOderAbbruch();
-
+	int index=datensatzWaehlenOderAbbruch("\nWelches Gerät wollen Sie bearbeiten? Bitte geben die die Nummer (#) ein:\n");
 	if (index == -1) return; // undokumentiert: Abbruch
 
 	// Meldung
@@ -289,22 +311,23 @@ void aendereGeraet() {
 
 void loescheGeraet() {
 	cls();
+	if (nGeraete() == 0) {
+		printf("Es sind keine Geräte zum Löschen vorhanden.\n\n");
+		warteAufTaste();
+		return;
+	}
 
 	zeigeTabelle();
-	printf("\nWelches Gerät wollen Sie löschen? Bitte geben die die Nummer (#) ein:\n");
-	int index=datensatzWaehlenOderAbbruch();
-
+	int index=datensatzWaehlenOderAbbruch("\nWelches Gerät wollen Sie löschen? Bitte geben die die Nummer (#) ein:\n");
 	if (index == -1) return; // undokumentiert: Abbruch
 
 	// Meldung
 	cls();
 	printf("Löschen von Eintrag #%d: \n", index);
 	ausgabeKlimageraet(&klimageraete[index]);
-	printf("\nWollen Sie dieses Gerät wirklich löschen (j/n)? ");
-	textEingabeAcceptEmpty = 0;
-	char * auswahl = texteingabeLengthSet(1, (char[]){'j','J','y','Y','n','N'});
 
-	if (*auswahl == 'n' || *auswahl == 'N')	return; // Abbruch, nicht löschen
+	if (confirm("\nWollen Sie dieses Gerät wirklich löschen (j/n)? ") == 0)
+		return; // Abbruch, nicht löschen
 
 	// Kontrollausgabe
 	cls();

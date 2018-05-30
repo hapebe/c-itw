@@ -7,6 +7,10 @@
  */
 
 void initTest() {
+#ifndef DEBUG
+	die("initTest() wurde aufgerufen, obwohl der Debug-Modus nicht aktiv ist.");
+#endif
+
 	// benutzt globale Variablen:
 	// struct t_klimageraete klimageraete[MAX_GERAETE];
 

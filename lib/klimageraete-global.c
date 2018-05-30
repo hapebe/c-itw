@@ -36,6 +36,18 @@ void warteAufTaste() {
 	textEingabeEinZeichenOhneEcho();
 }
 
+/**
+ * @return -1 wenn bestätigt, 0 wenn nicht
+ */
+int confirm(char * message) {
+	printf("%s", message);
+	textEingabeAcceptEmpty = 0;
+	char * auswahl = texteingabeLengthSet(1, (char[]){'j','J','y','Y','n','N'});
+
+	if (*auswahl == 'n' || *auswahl == 'N')	return 0; // nicht bestätigt
+
+	return -1; // ja/yes
+}
 
 float eingabePreis() {
 	float retval = -1.0;
