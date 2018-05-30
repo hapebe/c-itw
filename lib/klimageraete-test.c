@@ -1,5 +1,5 @@
 /**
- * Enthält Vorbereitungen von Test-Daten und ggf. auch Code zu
+ * Enthält Vorbereitungen von Test-Daten und Code zu
  * automatisierten Tests des Programms klimageraete.c .
  *
  * Sollte im fertigen Programm im Lieferzustand nicht mehr referenziert
@@ -9,7 +9,6 @@
 void initTest() {
 	// benutzt globale Variablen:
 	// struct t_klimageraete klimageraete[MAX_GERAETE];
-	// int statusKlimagegeraete[MAX_GERAETE];
 
 	int i;
 	struct t_klimageraet * ptr;
@@ -25,7 +24,6 @@ void initTest() {
 	ptr->hoehe = 120;
 	ptr->tiefe = 45;
 	ptr->preis = 1259.50;
-	statusKlimageraete[i] = BELEGT;
 
 	// Zweites:
 	i++;
@@ -37,7 +35,6 @@ void initTest() {
 	ptr->hoehe = 90;
 	ptr->tiefe = 40;
 	ptr->preis = 830.00;
-	statusKlimageraete[i] = BELEGT;
 
 	// Drittes:
 	i++;
@@ -49,7 +46,6 @@ void initTest() {
 	ptr->hoehe = 50;
 	ptr->tiefe = 50;
 	ptr->preis = 12.34;
-	statusKlimageraete[i] = BELEGT;
 
 	// explizit adressiertes:
 	i=20;
@@ -61,6 +57,23 @@ void initTest() {
 	ptr->hoehe = 40;
 	ptr->tiefe = 35;
 	ptr->preis = 399.90;
-	statusKlimageraete[i] = BELEGT;
 
+}
+
+void testEingabeLeererInt() {
+	printf("Leere int-Eingabe erkennen:\n");
+	textEingabeAcceptEmpty = -1;
+	char * p = texteingabeLengthSet(9,DEZIMAL_ZIFFERN);
+	if (strlen(p) == 0) printf("Leere Eingabe!"); else printf("Keine leere Eingabe: %d", atoi(p));
+	printf("\n");
+
+}
+
+void testEingabeLeererPreis() {
+	printf("Leere float-Eingabe (Preis) erkennen:\n");
+	textEingabeAcceptEmpty = -1;
+	float tempF = eingabePreisOderLeer();
+
+	if (flagLeereEingabe) printf("Leere Eingabe!"); else printf("Keine leere Eingabe: %f", tempF);
+	printf("\n");
 }

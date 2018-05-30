@@ -41,7 +41,7 @@ int sucheModellBezeichnung() {
 
 	// alle belegten Datensätze (in Kleinbuchstaben umwandeln!) nach Matches durchsuchen
 	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == FREI) continue;
+		if (istFreiesGeraet(&klimageraete[i])) continue;
 
 		// prtB enthält den Suchbegriff...
 
@@ -74,7 +74,7 @@ void sucheKaelteLeistung() {
 
 	// alle belegten Datensätze nach Matches durchsuchen
 	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == FREI) continue;
+		if (istFreiesGeraet(&klimageraete[i])) continue;
 
 		if (klimageraete[i].kaelteLeistung >= q) {
 			// printf("%d: %d <> %d : %d\n", i, klimageraete[i].kaelteLeistung, q, (klimageraete[i].kaelteLeistung >= q));
@@ -101,7 +101,7 @@ void sucheElektLeistung() {
 
 	// alle belegten Datensätze nach Matches durchsuchen
 	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == FREI) continue;
+		if (istFreiesGeraet(&klimageraete[i])) continue;
 
 		if (klimageraete[i].stromVerbrauch <= q) {
 			// printf("%d: %d <> %d : %d\n", i, klimageraete[i].kaelteLeistung, q, (klimageraete[i].kaelteLeistung >= q));
@@ -175,7 +175,7 @@ int sucheAbmessungen() {
 	} while(-1); // wird per break verlassen
 
 	// haben wir mindestens ein sinnvolles Kriterium?
-	if (qBreite == -1 && qHoehe == -1 && qTiefe && -1) {
+	if (qBreite == -1 && qHoehe == -1 && qTiefe == -1) {
 		printf("Sie haben kein Suchkriterium eingegeben - die Suche wird abgebrochen...\n\n");
 		warteAufTaste();
 		return -1;
@@ -187,7 +187,7 @@ int sucheAbmessungen() {
 
 	// alle belegten Datensätze nach Matches durchsuchen
 	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == FREI) continue;
+		if (istFreiesGeraet(&klimageraete[i])) continue;
 
 		int match = -1;
 		if (qBreite >= 0 && klimageraete[i].breite > qBreite) match = 0;
@@ -232,7 +232,7 @@ void suchePreis() {
 
 	// alle belegten Datensätze nach Matches durchsuchen
 	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == FREI) continue;
+		if (istFreiesGeraet(&klimageraete[i])) continue;
 
 		if (klimageraete[i].preis >= qMin && klimageraete[i].preis <= qMax) {
 			// printf("%d: %d <> %d : %d\n", i, klimageraete[i].kaelteLeistung, q, (klimageraete[i].kaelteLeistung >= q));

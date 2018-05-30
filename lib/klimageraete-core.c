@@ -1,3 +1,6 @@
+/**
+ * Kennzeichnung "frei" oder "gültig" findet über das erste Byte in der modellBezeichnung statt: 0 bedeutet frei.
+ */
 struct t_klimageraet {
 	char modellBezeichnung[256];
 	int kaelteLeistung; // in Watt
@@ -6,23 +9,21 @@ struct t_klimageraet {
 	float preis; // in Euro
 };
 
-// soll kennzeichnen, ob ein Eintrag in klimageraete vorhanden ist oder nicht:
-#define FREI 0
-#define BELEGT 1
-
 #define FILTER_VERSTECKT 0
 #define FILTER_SICHTBAR 1
 
 #define MAX_GERAETE 100
 struct t_klimageraet klimageraete[MAX_GERAETE];
-int statusKlimageraete[MAX_GERAETE];
 int filterKlimageraete[MAX_GERAETE];
+
+// forward declaration:
+int istFreiesGeraet(struct t_klimageraet * p);
 
 void debugPrintStatus() {
 	int i;
 	printf("status:\n");
 	for (i=0; i<MAX_GERAETE; i++) {
-		printf("%d ", statusKlimageraete[i]);
+		printf("%d ", istFreiesGeraet(&klimageraete[i])?0:1 );
 		if ((i+1) % 10 == 0) printf("\n");
 	}
 	printf("\n");
@@ -56,6 +57,39 @@ void eingabeKlimageraet(struct t_klimageraet * geraet) {
 	geraet->tiefe = eingabeIntGr0("Die Tiefe muss größer als 0 sein, bitte wiederholen:");
 	printf("Preis (EUR):\n");
 	geraet->preis = eingabePreis();
+}
+
+void aendereKlimageraet(struct t_klimageraet * geraet) {
+	char * ptrPuffer;
+	int temp;
+
+	printf("Bitte geben sie die neuen Daten ein! Wenn Sie eine leere Eingabe machen, wird der bestehende Wert übernommen.\n\n");
+
+	printf("Modellbezeichnung (ist: %s):\n", geraet->modellBezeichnung);
+	ptrPuffer = texteingabeLength(255);
+	if (strlen(ptrPuffer) > 0) strcpy(geraet->modellBezeichnung, ptrPuffer);
+
+	printf("Kälteleistung (Watt) (ist: %d):\n", geraet->kaelteLeistung);
+	temp = eingabeIntGr0OderLeer("Die Kälteleistung muss größer als 0 sein, bitte wiederholen:");
+	if (temp > 0) geraet->kaelteLeistung = temp;
+
+	printf("Stromverbrauch (Watt) (ist: %d):\n", geraet->stromVerbrauch);
+	temp = eingabeIntGr0OderLeer("Der Stromverbrauch muss größer als 0 sein, bitte wiederholen:");
+	if (temp > 0) geraet->stromVerbrauch = temp;
+
+	printf("Abmessungen - Breite (cm) (ist: %d):\n", geraet->breite);
+	temp = eingabeIntGr0OderLeer("Die Breite muss größer als 0 sein, bitte wiederholen:");
+	if (temp > 0) geraet->breite = temp;
+	printf("Abmessungen - Höhe (cm) (ist: %d):\n", geraet->hoehe);
+	temp = eingabeIntGr0OderLeer("Die Höhe muss größer als 0 sein, bitte wiederholen:");
+	if (temp > 0) geraet->hoehe = temp;
+	printf("Abmessungen - Tiefe (cm) (ist: %d):\n", geraet->tiefe);
+	temp = eingabeIntGr0OderLeer("Die Tiefe muss größer als 0 sein, bitte wiederholen:");
+	if (temp > 0) geraet->tiefe = temp;
+
+	printf("Preis (EUR) (ist: %5.2f):\n", geraet->preis);
+	float tempF = eingabePreisOderLeer();
+	if (!flagLeereEingabe) geraet->preis = tempF;
 }
 
 void writeKlimageraetBHT(char* dest, struct t_klimageraet * geraet) {
@@ -163,5 +197,77 @@ void printKlimageraetZeile(struct t_klimageraet * geraet) {
 	printf(" ");
 	printf("  %9.2f", geraet->preis);
 	printf("\n");
+}
+
+/**
+ * @return -1 wenn dieses Gerät als frei markiert ist; 0, wenn es "belegt" (gültig) ist
+ */
+int istFreiesGeraet(struct t_klimageraet * p) {
+	// printf("Modellbezeichnung: %s\n", p->modellBezeichnung);
+
+	if (p->modellBezeichnung[0] == '\0') return -1;
+	return 0;
+}
+
+/**
+ * ermöglicht die Auswahl einer gültigen Datensatznummer, oder Abbruch bei leerer Eingabe:
+ * @return gültiger Index von klimageraete[] oder -1 für Abbruch
+ */
+int datensatzWaehlenOderAbbruch(void) {
+	static char buffer[32];
+	char * ptrBuffer = &buffer[0];
+
+	do {
+		fgets(ptrBuffer, 31, stdin);
+		// dump(trim(ptrBuffer)); warteAufTaste(); // DEBUG
+
+		if (strlen(trim(ptrBuffer)) == 0) return -1; // Schleife und Funktion verlassen
+
+		int index = atoi(trim(ptrBuffer));
+		if (index < 0 || index >= MAX_GERAETE) {
+			printf("%d ist keine gültige Geräte-Nummer.\n", index);
+		} else if (istFreiesGeraet(&klimageraete[index])) {
+			printf("Nummer %d enthält keinen Datensatz.\n", index);
+		} else {
+			return index;
+		}
+	} while(-1); // wird per return verlassen
+}
+
+/**
+ * gibt die Anzahl vorhandener Klimageräte zurück
+ */
+int nGeraete(void) {
+	int n = 0;
+
+	int i;
+	for (i=0; i<MAX_GERAETE; i++) {
+		if (!istFreiesGeraet(&klimageraete[i])) n++;
+	}
+	return n;
+}
+
+/**
+ * gibt die Anzahl sichtbarer Klimageräte zurück
+ */
+int nSichtbareGeraete(void) {
+	int n = 0;
+
+	int i;
+	for (i=0; i<MAX_GERAETE; i++) {
+		if (!istFreiesGeraet(&klimageraete[i]) && filterKlimageraete[i] == FILTER_SICHTBAR) n++;
+	}
+	return n;
+}
+
+/**
+ * @return index eines freien Datensatzes in klimageraete[] oder -1, wenn es keine freien Plätze gibt.
+ */
+int getFreiesGeraet(void) {
+	int i;
+	for (i=0; i<MAX_GERAETE; i++) {
+		if (istFreiesGeraet(&klimageraete[i])) return i;
+	}
+	return -1;
 }
 

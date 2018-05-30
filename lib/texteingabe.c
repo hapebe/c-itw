@@ -27,6 +27,7 @@
 // globale Variable, die zur Veränderung des Verhaltens von
 // texteingabe() geändert werden kann
 int textEingabeAcceptEmpty = -1;
+int flagLeereEingabe = 0;
 
 
 /**
@@ -225,6 +226,7 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 		fprintf(stderr, "Es muss mindestens eine Vorkomma-Stelle erlaubt sein.");
 		exit(1);
 	}
+	flagLeereEingabe = 0;
 
 	int maxLength = maxVorKommaStellen + maxNachKommaStellen + 2; // 1 fürs Minus, 1 fürs Komma
 		// keine Buffer-Overruns akzeptieren: ggf. maxLength beschränken:
@@ -355,6 +357,12 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 	// Eingabe abschließen:
 	printf("\n");
 	buffer[cursor] = '\0'; // wir bauen ordentliche 0-terminierte Strings...
+
+	if (cursor == 0) {
+		// leere Eingabe:
+		flagLeereEingabe = -1;
+		return 0.0;
+	}
 
 
 	// Rückgabewert berechnen:

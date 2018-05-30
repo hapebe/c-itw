@@ -4,47 +4,35 @@
 #include "lib/klimageraete-core.c" // alles, was direkt die Verarbeitung des Typs "t_klimageraet" betrifft
 #include "lib/klimageraete-suche.c"
 #ifdef DEBUG
-	#include "lib/klimageraete-test.c" // für initTest(...);
+	#include "lib/klimageraete-test.c"
 #endif
 
 void init(void);
-void zeigeHauptMenu(void); // nur Anzeige
+void destroy(void);
+void hauptMenu(void); // Anzeige und Verarbeitung
 void tabellenMenu(void); // Anzeige und Verarbeitung
 void suchMenu(void); // Anzeige und Verarbeitung
-void zeigeTabelle(void);
+void zeigeTabelle(void); // nur Anzeige
 void neuesGeraet(); // interaktive Prozedur: neuen Datensatz anlegen
 void ersetzeGeraet(); // interaktive Prozedur: Datensatz ersetzen
-int datensatzWaehlenOderAbbruch(void); // Eingabe-Funktion
-int nGeraete(void);
-int nSichtbareGeraete(void);
-int getFreiesGeraet(void);
+void aendereGeraet(); // interaktive Prozedur: Datensatz ändern
+void loescheGeraet(); // interaktive Prozedur: Datensatz löschen
 
 int main(int argc, char** argv) {
 	init(); // definierten Start-Zustand herstellen
+
+#ifdef DEBUG
 	// debugPrintStatus();
 
-	int abbruch = 0;
-	do {
-		zeigeHauptMenu();
-		char * auswahl = textEingabeEinZeichenOhneEcho();
-		switch(*auswahl) {
-			case '1': // eingeben
-				neuesGeraet();
-				break;
-			case '2': // ausgeben
-				tabellenMenu();
-				break;
-			case '3': // ersetzen
-				ersetzeGeraet();
-				break;
-			case '4': // suchen
-				suchMenu();
-				break;
-			case '5': case 'q': case 'Q': case 'x': case 'X': case 27: case 0:
-				abbruch = -1;
-				break;
-		}
-	} while(!abbruch);
+	// testEingabeLeererInt();
+	// testEingabeLeererPreis();
+	// testEingabeLeererPreis();
+	// warteAufTaste();
+#endif
+
+	hauptMenu(); // Haupt-Schleife, "Home-Screen" des Programms
+
+	destroy(); // End-Zustand definiert behandeln (speichern?)
 
 	return 0;
 }
@@ -52,7 +40,7 @@ int main(int argc, char** argv) {
 void init() {
 	int i=0;
 	for (i=0; i<MAX_GERAETE; i++) {
-		statusKlimageraete[i] = FREI;
+		klimageraete[i].modellBezeichnung[0] = '\0';
 		filterKlimageraete[i] = FILTER_SICHTBAR;
 	}
 
@@ -65,18 +53,53 @@ void init() {
 	// wieder einlesen
 }
 
-void zeigeHauptMenu() {
-	cls();
+void destroy() {
+	// TODO: wenn Datensätze existieren, diese als Datei sichern.
+	// Sonst möglicherweise bestehende Datei löschen.
+}
 
-	printf("Hauptmenü\n");
-	printf("\n");
-	printf("* Es befinden sich aktuell %d Klimageräte in der Datenbank. *\n", nGeraete());
-	printf("\n");
-	printf("\t1\tEingabe\n");
-	printf("\t2\tAusgabe\n");
-	printf("\t3\tErsetzen\n");
-	printf("\t4\tSuchen\n");
-	printf("\t5\tBeenden\n");
+void hauptMenu() {
+	int abbruch = 0;
+	do {
+		cls();
+
+		printf("Hauptmenü\n");
+		printf("\n");
+		printf("* Es befinden sich aktuell %d Klimageräte in der Datenbank. *\n", nGeraete());
+		printf("\n");
+		printf("\t1\tEingabe\n");
+		printf("\t2\tAusgabe\n");
+		printf("\t3\tÄndern\n");
+		printf("\t4\tErsetzen\n");
+		printf("\t5\tLöschen\n");
+		printf("\t6\tSuchen\n");
+		printf("\t9\tBeenden\n");
+
+		char * auswahl = textEingabeEinZeichenOhneEcho();
+		switch(*auswahl) {
+			case '1': // eingeben
+				neuesGeraet();
+				break;
+			case '2': // ausgeben
+				tabellenMenu();
+				break;
+			case '3': // update / ändern
+				aendereGeraet();
+				break;
+			case '4': // ersetzen
+				ersetzeGeraet();
+				break;
+			case '5': // löschen
+				loescheGeraet();
+				break;
+			case '6': // suchen
+				suchMenu();
+				break;
+			case '9': case 'q': case 'Q': case 'x': case 'X': case 27: case 0:
+				abbruch = -1;
+				break;
+		}
+	} while(!abbruch);
 }
 
 void zeigeTabelle() {
@@ -93,7 +116,7 @@ void zeigeTabelle() {
 	if (nSichtbareGeraete() == 1) {
 		// Sonderfall: direkt die Details anzeigen
 		for (i=0; i<MAX_GERAETE; i++) {
-			if (statusKlimageraete[i] == FREI) continue;
+			if (istFreiesGeraet(&klimageraete[i])) continue;
 			if (filterKlimageraete[i] == FILTER_VERSTECKT) continue;
 			ausgabeKlimageraet(&klimageraete[i]);
 			return;
@@ -108,7 +131,7 @@ void zeigeTabelle() {
 	printKlimageraetZeilenSeparator();
 
 	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == FREI) continue;
+		if (istFreiesGeraet(&klimageraete[i])) continue;
 		if (filterKlimageraete[i] == FILTER_VERSTECKT) continue;
 		printf("%4d ", i);
 		printKlimageraetZeile(&klimageraete[i]);
@@ -194,31 +217,6 @@ void tabellenMenu() {
 	}
 }
 
-/**
- * ermöglicht die Auswahl einer gültigen Datensatznummer, oder Abbruch bei leerer Eingabe:
- * @return gültiger Index von klimageraete[] oder -1 für Abbruch
- */
-int datensatzWaehlenOderAbbruch(void) {
-	static char buffer[32];
-	char * ptrBuffer = &buffer[0];
-
-	do {
-		fgets(ptrBuffer, 31, stdin);
-		// dump(trim(ptrBuffer)); warteAufTaste(); // DEBUG
-
-		if (strlen(trim(ptrBuffer)) == 0) return -1; // Schleife und Funktion verlassen
-
-		int index = atoi(trim(ptrBuffer));
-		if (index < 0 || index >= MAX_GERAETE) {
-			printf("%d ist keine gültige Geräte-Nummer.\n", index);
-		} else if (statusKlimageraete[index] == FREI) {
-			printf("Nummer %d enthält keinen Datensatz.\n", index);
-		} else {
-			return index;
-		}
-	} while(-1); // wird per return verlassen
-}
-
 void neuesGeraet() {
 	cls();
 
@@ -234,7 +232,6 @@ void neuesGeraet() {
 	printf("Bitte geben sie die Daten des neuen Klimagerätes ein!\n\n");
 	// eingeben
 	eingabeKlimageraet(&klimageraete[index]);
-	statusKlimageraete[index] = BELEGT;
 
 	// Kontrollausgabe
 	cls();
@@ -267,39 +264,56 @@ void ersetzeGeraet() {
 	warteAufTaste();
 }
 
-/**
- * gibt die Anzahl vorhandener Klimageräte zurück
- */
-int nGeraete(void) {
-	int n = 0;
+void aendereGeraet() {
+	cls();
 
-	int i;
-	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == BELEGT) n++;
-	}
-	return n;
+	zeigeTabelle();
+	printf("\nWelches Gerät wollen Sie bearbeiten? Bitte geben die die Nummer (#) ein:\n");
+	int index=datensatzWaehlenOderAbbruch();
+
+	if (index == -1) return; // undokumentiert: Abbruch
+
+	// Meldung
+	cls();
+	printf("Sie bearbeiten den Eintrag #%d (%s).\n", index, klimageraete[index].modellBezeichnung);
+	// eingeben
+	aendereKlimageraet(&klimageraete[index]);
+
+	// Kontrollausgabe
+	cls();
+	printf("Das Gerät ist jetzt mit folgenden Daten erfasst:\n\n");
+	ausgabeKlimageraet(&klimageraete[index]);
+
+	warteAufTaste();
 }
 
-/**
- * gibt die Anzahl sichtbarer Klimageräte zurück
- */
-int nSichtbareGeraete(void) {
-	int n = 0;
+void loescheGeraet() {
+	cls();
 
-	int i;
-	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == BELEGT && filterKlimageraete[i] == FILTER_SICHTBAR) n++;
-	}
-	return n;
+	zeigeTabelle();
+	printf("\nWelches Gerät wollen Sie löschen? Bitte geben die die Nummer (#) ein:\n");
+	int index=datensatzWaehlenOderAbbruch();
+
+	if (index == -1) return; // undokumentiert: Abbruch
+
+	// Meldung
+	cls();
+	printf("Löschen von Eintrag #%d: \n", index);
+	ausgabeKlimageraet(&klimageraete[index]);
+	printf("\nWollen Sie dieses Gerät wirklich löschen (j/n)? ");
+	textEingabeAcceptEmpty = 0;
+	char * auswahl = texteingabeLengthSet(1, (char[]){'j','J','y','Y','n','N'});
+
+	if (*auswahl == 'n' || *auswahl == 'N')	return; // Abbruch, nicht löschen
+
+	// Kontrollausgabe
+	cls();
+	printf("Gerät #%d (%s) wurde gelöscht.\n\n", index, &klimageraete[index].modellBezeichnung[0]);
+
+	// als frei markieren:
+	klimageraete[index].modellBezeichnung[0] = '\0';
+
+	warteAufTaste();
 }
 
-/**
- * @return index eines freien Datensatzes in klimageraete[] oder -1, wenn es keine freien Plätze gibt.
- */
-int getFreiesGeraet(void) {
-	int i;
-	for (i=0; i<MAX_GERAETE; i++) {
-		if (statusKlimageraete[i] == FREI) return i;
-	}
-	return -1;
-}
+
