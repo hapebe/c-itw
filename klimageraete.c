@@ -74,6 +74,7 @@ void hauptMenu() {
 		printf("\t4\tErsetzen\n");
 		printf("\t5\tLöschen\n");
 		printf("\t6\tSuchen\n");
+		printf("\n");
 		printf("\t9\tBeenden\n");
 
 		char * auswahl = textEingabeEinZeichenOhneEcho();

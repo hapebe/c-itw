@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root text="&#34;FUNKTION eDouble&#34;,&#34;Parameter: Ganzzahl vorkomma, Ganzzahl nachkomma&#34;,&#34;Rückgabe-Wert: double-Zahl&#34;" comment="&#34;&#34;" color="ffffff" type="program" style="nice">
+	<children>
+		<instruction text="&#34;Parameter: &#34;,&#34;&#34;,&#34;vorkomma   maximal erlaubte Länge des Vorkomma-Teils&#34;,&#34;nachkomma  maximal erlaubte Länge des Nachkomma-Teils&#34;,&#34;&#34;,&#34;Variablen-Deklarationen:&#34;,&#34;&#34;,&#34;Fließkommazahlen: &#34;,&#34;wert  Rückgabewert (Bedeutung der Eingabe als Fließkommazahl)&#34;,&#34;faktor2  Stellenwert für den Nachkomma-Teil&#34;,&#34;&#34;,&#34;Ganzzahlen: &#34;,&#34;komma  Status: 1=vorhanden, 0=nicht vorhanden&#34;,&#34;zVorkomma  aktuelle Anzahl Vorkomma-Stellen&#34;,&#34;zNachkomma  aktuelle Anzahl Nachkomma-Stellen&#34;,&#34;j  Schleifenzähler&#34;,&#34;faktor  Stellenwert für den Vorkomma-Teil&#34;,&#34;&#34;,&#34;Zeichen: &#34;,&#34;eingabe  Zwischenspeicher für Tastatur-Eingaben&#34;,&#34;&#34;,&#34;Zeichen-Arrays: &#34;,&#34;vArray[16]  Speicher für Vorkomma-Zeichen(!)&#34;,&#34;nArray[6]  Speicher für Nachkomma-Zeichen(!)&#34;" comment="&#34;&#34;" color="80ff80" rotated="0"></instruction>
+		<instruction text="&#34;Initialisierung: &#34;,&#34;komma &#60;- 0&#34;,&#34;zVorkomma &#60;- 0&#34;,&#34;zNachkomma &#60;- 0&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<instruction text="&#34;Ab hier: Interaktive Tastatureingaben behandeln&#34;,&#34;ggf. zeichenweise in vArray oder nArray speichern, &#34;,&#34;Längen der Vor- und Nachkomma-Teile in zVorkomma und zNachkomma erfassen,&#34;,&#34;Status des Kommas (vorhanden=1, nicht vorhanden=0) in komma erfassen.&#34;" comment="&#34;&#34;" color="80ffff" rotated="0"></instruction>
+		<repeat text="&#34;Solange: &#34;,&#34;((eingabe verschieden von &#60;Return&#62; / 13) und (zVorkomma verschieden von 0))&#34;,&#34;oder&#34;,&#34;(zVorkomma gleich 0)&#34;" comment="&#34;&#34;" color="ffffff">
+			<qRepeat>
+				<repeat text="&#34;Solange eingabe keiner der folgenden Zeichenarten angehört:&#34;,&#34;* Ziffern (zwischen 48 und 57)&#34;,&#34;* Backspace (8)&#34;,&#34;* Return (13)&#34;,&#34;* Punkt oder Komma (46 / 44)&#34;" comment="&#34;&#34;" color="ffffff">
+					<qRepeat>
+						<instruction text="&#34;eingabe &#60;- Rückgabewert von Funktionaufruf &#34;&#34;getch&#34;&#34; &#34;,&#34;(entspricht: einzelnes Zeichen von der Tastatur einlesen, ohne Echo auf der Konsole)&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+					</qRepeat>
+				</repeat>
+				<alternative text="&#34;Ist eingabe NICHT (Backspace oder Return (8 oder 13))?&#34;" comment="&#34;&#34;" color="ffffff">
+					<qTrue>
+						<instruction text="&#34;&#34;&#34;Konstruktion&#34;&#34; - ein neues Zeichen wurde eingegeben:&#34;" comment="&#34;&#34;" color="80ffff" rotated="0"></instruction>
+						<alternative text="&#34;Ist komma gleich 0, zVorkomma kleiner als vorkomma und eingabe kein Punkt/Komma?&#34;" comment="&#34;Handelt es sich um eine Ziffer, die vor dem Komma steht, und ist die gewünschte Maximallänge nicht überschritten?&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;Zeichen an der entsprechenden Stelle als Vorkomma-Zeichen speichern:&#34;,&#34;vArray[zVorkomma] &#60;- eingabe&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;zVorkomma &#60;- zVorkomma + 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;Ausgabe: Zeichen für eingabe&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+						<alternative text="&#34;Ist komma gleich 1, zNachkomma kleiner als nachkomma und eingabe kein Punkt/Komma?&#34;" comment="&#34;Handelt es sich um eine Ziffer, die nach dem Komma steht, und ist die gewünschte Maximallänge nicht überschritten?&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;Zeichen an der entsprechenden Stelle als Nachkomma-Zeichen speichern:&#34;,&#34;nArray[zNachkomma] &#60;- eingabe&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;zNachkomma &#60;- zNachkomma + 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;Ausgabe: Zeichen für eingabe&#34;" comment="" color="ffffff" rotated="0"></instruction>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+						<alternative text="&#34;Ist eingabe ein Punkt/Komma, gibt es noch kein Komma und gibt es mindestens eine Vorkomma-Stelle?&#34;,&#34;(eingabe ist 44 oder 46) und (komma gleich 0) und (zVorkomma größer als 0)?&#34;" comment="&#34;&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;komma &#60;- 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;Ausgabe &#34;&#34;,&#34;&#34;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+					</qTrue>
+					<qFalse>
+					</qFalse>
+				</alternative>
+				<alternative text="&#34;Ist eingabe gleich &#60;Backspace&#62; (8)?&#34;" comment="&#34;&#34;" color="ffffff">
+					<qTrue>
+						<instruction text="&#34;&#34;&#34;Destruktion&#34;&#34; - ein Zeichen soll gelöscht werden&#34;" comment="&#34;&#34;" color="80ffff" rotated="0"></instruction>
+						<alternative text="&#34;Ist komma gleich 0 und zVorkomma größer als 0?&#34;,&#34;entspricht: Gibt es eine Vorkomma-Stelle, die gelöscht werden kann?&#34;" comment="&#34;&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;Bestehendes Zeichen auf der Konsole überschreiben:&#34;,&#34;Ausgabe: &#60;Backspace&#62;,&#60;Space&#62;,&#60;Backspace&#62;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;zVorkomma &#60;- zVorkomma - 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+						<alternative text="&#34;Ist komma gleich 1 und zNachkomma gleich 0?&#34;,&#34;entspricht: Soll das Komma gelöscht werden?&#34;" comment="&#34;&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;Bestehendes Zeichen auf der Konsole überschreiben:&#34;,&#34;Ausgabe: &#60;Backspace&#62;,&#60;Space&#62;,&#60;Backspace&#62;&#34;" comment="" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;komma &#60;- 0&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+						<alternative text="&#34;Ist komma gleich 1 und zNachkomma größer als 0?&#34;,&#34;entspricht: Soll eine Nachkomma-Stelle gelöscht werden?&#34;" comment="&#34;&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;Bestehendes Zeichen auf der Konsole überschreiben:&#34;,&#34;Ausgabe: &#60;Backspace&#62;,&#60;Space&#62;,&#60;Backspace&#62;&#34;" comment="" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;zNachkomma &#60;- zNachkomma - 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+					</qTrue>
+					<qFalse>
+					</qFalse>
+				</alternative>
+			</qRepeat>
+		</repeat>
+		<instruction text="&#34;Ab hier: wert (für die Rückgabe) ermitteln,&#34;,&#34;Interpretation der Eingabe als Fließkomma-Zahl&#34;,&#34;wert &#60;- 0&#34;" comment="&#34;&#34;" color="80ffff" rotated="0"></instruction>
+		<instruction text="&#34;j &#60;- zVorkomma - 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<for text="&#34;Solange j größer oder gleich 0 ist&#34;" comment="&#34;&#34;" color="ffffff">
+			<qFor>
+				<alternative text="&#34;Ist j gleich zVorkomma - 1 ?&#34;,&#34;(entspricht: Ist dies der erste Schleifendurchlauf?)&#34;" comment="&#34;&#34;" color="ffffff">
+					<qTrue>
+						<instruction text="&#34;faktor &#60;- 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+					</qTrue>
+					<qFalse>
+						<instruction text="&#34;faktor &#60;- faktor * 10&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+					</qFalse>
+				</alternative>
+				<instruction text="&#34;wert &#60;- wert + (vArray[j]-48) * faktor&#34;" comment="&#34;Entspricht: &#34;,&#34;Ziffernwert an der Vorkomma-Stelle j ermitteln,&#34;,&#34;mit dem Stellenwert multiplizieren,&#34;,&#34;wert um diesen Betrag erhöhen.&#34;" color="ffffff" rotated="0"></instruction>
+				<instruction text="&#34;j &#60;- j - 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+			</qFor>
+		</for>
+		<instruction text="&#34;j &#60;- 0&#34;,&#34;faktor2 &#60;- 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<for text="&#34;Solange j kleiner als zNachkomma ist&#34;" comment="&#34;&#34;" color="ffffff">
+			<qFor>
+				<instruction text="&#34;faktor2 &#60;- faktor2 / 10&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+				<instruction text="&#34;wert &#60;- wert + (nArray[j] - 48) * faktor2&#34;" comment="&#34;Entspricht: &#34;,&#34;Ziffernwert an der Nachkomma-Stelle j ermitteln,&#34;,&#34;mit dem Stellenwert multiplizieren,&#34;,&#34;wert um diesen Betrag erhöhen.&#34;" color="ffffff" rotated="0"></instruction>
+				<instruction text="&#34;j &#60;- j + 1&#34;" comment="" color="ffffff" rotated="0"></instruction>
+			</qFor>
+		</for>
+		<jump text="&#34;Rückgabe: wert&#34;" comment="&#34;&#34;" color="ffffff"></jump>
+	</children>
+</root>
