@@ -3,9 +3,12 @@
 *.log
 **/*-zahlen-eingabe
 .~lock**
+gmon.out
 # Geany project files:
 it5.dev
 it5.layout
+# Code::Blocks project files:
+codeblocks-project/**
 # 3rd party libraries:
 lib/wingetopt/**
 # Compiled Linux binaries:

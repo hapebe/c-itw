@@ -64,6 +64,27 @@ void initTest() {
 
 }
 
+/**
+ * schreibt den Belegungs-Status und die Sichtbarkeit aller
+ * Speicherplätze für Klimageräte auf den Bildschirm.
+ */
+void debugPrintStatus() {
+	int i;
+	printf("status:\n");
+	for (i=0; i<MAX_GERAETE; i++) {
+		printf("%d ", istFreiesGeraet(&klimageraete[i])?0:1 );
+		if ((i+1) % 10 == 0) printf("\n");
+	}
+	printf("\n");
+	printf("filter:\n");
+	for (i=0; i<MAX_GERAETE; i++) {
+		printf("%d ", filterKlimageraete[i]);
+		if ((i+1) % 10 == 0) printf("\n");
+	}
+	printf("\n");
+}
+
+
 void testEingabeLeererInt() {
 	printf("Leere int-Eingabe erkennen:\n");
 	textEingabeAcceptEmpty = -1;

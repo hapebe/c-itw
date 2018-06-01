@@ -21,22 +21,9 @@ int istFreiesGeraet(struct t_klimageraet *);
 int nSichtbareGeraete(void);
 int einzigesSichtbaresGeraet(void);
 
-void debugPrintStatus() {
-	int i;
-	printf("status:\n");
-	for (i=0; i<MAX_GERAETE; i++) {
-		printf("%d ", istFreiesGeraet(&klimageraete[i])?0:1 );
-		if ((i+1) % 10 == 0) printf("\n");
-	}
-	printf("\n");
-	printf("filter:\n");
-	for (i=0; i<MAX_GERAETE; i++) {
-		printf("%d ", filterKlimageraete[i]);
-		if ((i+1) % 10 == 0) printf("\n");
-	}
-	printf("\n");
-}
-
+/**
+ * selbständige interaktive Prozedur: Daten eines Klimageräts neu eingeben
+ */
 void eingabeKlimageraet(struct t_klimageraet * geraet) {
 	do {
 		printf("Modellbezeichnung:\n");
@@ -61,6 +48,10 @@ void eingabeKlimageraet(struct t_klimageraet * geraet) {
 	geraet->preis = eingabePreis();
 }
 
+/**
+ * selbständige interaktive Prozedur: Daten eines Klimageräts pro Eigenschaft
+ * ausgeben und dann entweder übernehmen oder neu eingeben
+ */
 void aendereKlimageraet(struct t_klimageraet * geraet) {
 	char * ptrPuffer;
 	int temp;
@@ -95,6 +86,9 @@ void aendereKlimageraet(struct t_klimageraet * geraet) {
 	if (!flagLeereEingabe) geraet->preis = tempF;
 }
 
+/**
+ * schreibt einen "BxHxT"-String für die Daten eines Klimageräts
+ */
 void writeKlimageraetBHT(char* dest, struct t_klimageraet * geraet) {
 	static char buffer[32];
 	char * ptrBuffer = &buffer[0];
@@ -110,6 +104,9 @@ void writeKlimageraetBHT(char* dest, struct t_klimageraet * geraet) {
 	strcat(dest, ptrBuffer);
 }
 
+/**
+ * Gibt eine formatierte Einzelansicht eines Klimageräts aus.
+ */
 void ausgabeKlimageraet(struct t_klimageraet * geraet) {
 	static char buffer[32];
 	char * ptrBuffer = &buffer[0];
@@ -171,6 +168,9 @@ void printKlimageraetZeilenSeparator() {
 	printf("\n");
 }
 
+/**
+ * gibt eine auf die Tabellen-Ansicht formatierte Zeile für ein Klimagerät aus
+ */
 void printKlimageraetZeile(struct t_klimageraet * geraet) {
 	static char bufferA[256];
 	char * ptrBufferA = &bufferA[0];
