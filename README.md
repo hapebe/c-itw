@@ -84,6 +84,7 @@ siehe: [struct1.c](struct1.c)
 * über make / Makefile etc. lesen und damit experimentieren (sowas gibt es u.a. ja auch bei den klassischen German-Atlantis-Quellen...)
 * irgendwie ähnlich zur make-Erkundung: bestehendes Projekt mit Code::Blocks "importieren" und versuchen zu kompilieren (Spoiler: mit den klimageraet.c-Dateien funktioniert es nicht auf Anhieb...)
 * Doxygen anschauen: JavaDoc-ähnliche Dokumentation aus Kommentaren im Quelltext generieren?
+  * "Moritz" ist ein PlugIn für Doxygen, dass Nassi-Shneiderman-Diagramme erstellt (aka "Struktogramme")
 * in Richtung "Schiffe versenken" als Projekt im itw-Unterricht: den Source-Code von "gnome-mines" studieren, dort etwas über die Oberflächen-Programmierung
   * hmmm, stellt sich heraus, dass gnome-mines in Vala geschrieben ist - das ist wohl eine Sprache, die ihren Code wiederum nach C kompiliert, aber für meine Zwecke kommt mir das erstmal zu kompliziert vor. :-(
   * also anderweitig: [https://www.quora.com/How-do-I-create-a-beautiful-GUI-in-C-Linux]

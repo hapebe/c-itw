@@ -8,14 +8,14 @@ int main(void)
 	int operand1, operand2, ergebnis;
 	float ergebnisF;
 	
-	printf("Willkommen bei Ihrem umst\204ndlichen Taschenrechner!\n");
+	printf("Willkommen bei Ihrem umständlichen Taschenrechner!\n");
 	do {
 		printf("Bitte geben Sie den ersten Operanden ein: ");
 		scanf("%i", &operand1);
 		
 		int okay = 0;
 		do {
-			printf("W\204hlen Sie eine Operation (+ - * /): ");
+			printf("Wählen Sie eine Operation (+ - * /): ");
 			fflush(stdin);
 			operation = getch();
 			
@@ -23,7 +23,7 @@ int main(void)
 			if (operation == '-') okay = 1;
 			if (operation == '*') okay = 1;
 			if (operation == '/') okay = 1;
-			if (!okay) printf("\nDas ist keine g\201ltige Operation...\n");
+			if (!okay) printf("\nDas ist keine gültige Operation...\n");
 		} while (!okay);
 		printf("%c\n", operation);
 
@@ -63,7 +63,7 @@ int main(void)
 		printf("Das float-Ergebnis ist %e.\n", ergebnisF);
 		printf("Das float-Ergebnis im Format %%5.3f ist %5.3f\n", ergebnisF);
 		
-		printf("\nBeliebige Taste zum fortsetzen, x f\201r Abbruch...");
+		printf("\nBeliebige Taste zum fortsetzen, x für Abbruch...");
 		fflush(stdin);
 		kommando = getch();
 		printf("\n");
