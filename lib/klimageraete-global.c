@@ -26,17 +26,6 @@ void cls() {
 }
 
 /**
- * gibt eine Meldung aus und wartet dann dementsprechend auf einen Tastendruck.
- */
-void warteAufTaste() {
-	printf("\nBitte drücken Sie zum Fortsetzen eine Taste. ");
-	// globales "Flag" für die Eingabe: auch leere Eingabe akzeptieren:
-	textEingabeAcceptEmpty = -1; // siehe lib/texteingabe.c
-	// auf eine Taste warten, aber die Eingabe ignorieren / verwerfen:
-	textEingabeEinZeichenOhneEcho();
-}
-
-/**
  * @return -1 wenn bestätigt, 0 wenn nicht
  */
 int confirm(char * message) {

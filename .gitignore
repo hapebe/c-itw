@@ -11,6 +11,7 @@ it5.layout
 codeblocks-project/**
 # 3rd party libraries:
 lib/wingetopt/**
+harald/**
 # Compiled Linux binaries:
 array-zeiger
 baseconv

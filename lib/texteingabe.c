@@ -1,11 +1,11 @@
 /**
- * Text-Eingabe-Funktionen auf Basis von "getch()", die die Gültigkeit
- * von Eingaben zeichenweise prüfen können, und ggf. ohne
+ * Text-Eingabe-Funktionen auf Basis von "getch()", die die GÃ¼ltigkeit
+ * von Eingaben zeichenweise prÃ¼fen kÃ¶nnen, und ggf. ohne
  * <Eingabe>-Taste am Ende auskommen.
  *
  * *FIXME*
  * Unter Linux kommt die Behandlung von Backspace nicht mit Eingaben
- * klar, die länger als eine Bildschirmzeile sind.
+ * klar, die lÃ¤nger als eine Bildschirmzeile sind.
  */
 
 #include <stdio.h>
@@ -24,8 +24,8 @@
 #define KOMMA_ZEICHEN (char[]){ '.',',','\0' }
 #define NEGATIV_ZEICHEN (char[]){ '-','\0' }
 
-// globale Variable, die zur Veränderung des Verhaltens von
-// texteingabe() geändert werden kann
+// globale Variable, die zur VerÃ¤nderung des Verhaltens von
+// texteingabe() geÃ¤ndert werden kann
 int textEingabeAcceptEmpty = -1;
 int flagLeereEingabe = 0;
 
@@ -43,10 +43,10 @@ int setContainsAtom(char * set, char atom) {
 }
 
 char * texteingabeLengthSet(int maxLength, char * allowedCharSet) {
-	// keine Buffer-Overruns akzeptieren: ggf. maxLength beschränken:
+	// keine Buffer-Overruns akzeptieren: ggf. maxLength beschrÃ¤nken:
 	if (maxLength > TEXTEINGABE_BUFFER_SIZE - 1) maxLength = TEXTEINGABE_BUFFER_SIZE - 1;
 
-	static char buffer[TEXTEINGABE_BUFFER_SIZE]; // 1 char mehr, für die \0 am Ende
+	static char buffer[TEXTEINGABE_BUFFER_SIZE]; // 1 char mehr, fÃ¼r die \0 am Ende
 	int cursor = 0;
 	char c;
 
@@ -54,24 +54,24 @@ char * texteingabeLengthSet(int maxLength, char * allowedCharSet) {
 
 		c = getch();
 
-		// Auf Steuerzeichen prüfen:
+		// Auf Steuerzeichen prÃ¼fen:
 		if (c == 13 || c == 10) {
-			// Eingabe abschließen
+			// Eingabe abschlieÃŸen
 			if (textEingabeAcceptEmpty || cursor > 0) break;
 		} else if (c == 8 || c == 127) {
 			// Backspace
 			if (cursor > 0) {
-				// nur dann verarbeiten, wenn wir tatsächlich mindesten ein Zeichen haben
+				// nur dann verarbeiten, wenn wir tatsÃ¤chlich mindesten ein Zeichen haben
 
 				#ifdef _WIN32
-				printf("%c %c",c ,c); // BS, Leerzeichen zum Löschen, wieder BS...
+				printf("%c %c",c ,c); // BS, Leerzeichen zum LÃ¶schen, wieder BS...
 				#endif
 
 				#ifdef __linux__
 				// Unter Linux geht der Backspace-Support wohl nicht ohne \r oder explizite Positionierung des Cursors...
 				int i;
 
-				// Erste Runde: Alles (+1 Zeichen) mit Leerzeichen überschreiben:
+				// Erste Runde: Alles (+1 Zeichen) mit Leerzeichen Ã¼berschreiben:
 				printf("\r");
 				for (i=0; i<cursor; i++) printf(" ");
 
@@ -89,9 +89,9 @@ char * texteingabeLengthSet(int maxLength, char * allowedCharSet) {
 		} else {
 			// also ein normales Text-Zeichen:
 
-			// wenn das Zeichen erlaubt ist UND der String unter der erlaubten Länge liegt:
+			// wenn das Zeichen erlaubt ist UND der String unter der erlaubten LÃ¤nge liegt:
 			if (setContainsAtom(allowedCharSet, c) && (cursor < maxLength)) {
-				// das Zeichen wird angehängt:
+				// das Zeichen wird angehÃ¤ngt:
 				printf("%c", c);
 				buffer[cursor] = c;
 				cursor ++;
@@ -100,7 +100,7 @@ char * texteingabeLengthSet(int maxLength, char * allowedCharSet) {
 			}
 		} // Ende Klassen-Unterscheidung der Eingabe
 
-	} // Auf das nächste Eingabezeichen warten
+	} // Auf das nÃ¤chste Eingabezeichen warten
 
 	buffer[cursor] = '\0'; // Wir bauen ordentliche 0-terminierte Strings...
 	printf("\n");
@@ -118,7 +118,7 @@ char * texteingabeLength(int maxLength) {
 		allowedCharSet[pos] = i;
 		pos++;
 	}
-	// TODO noch Umlaute etc. hinzufügen...
+	// TODO noch Umlaute etc. hinzufÃ¼gen...
 	allowedCharSet[pos] = 0; // 0-terminiert...
 
 	return texteingabeLengthSet(maxLength, allowedCharSet);
@@ -129,16 +129,16 @@ char * texteingabe(void) {
 }
 
 char * textEingabeEinZeichenOhneEcho(void) {
-	static char buffer[2]; // 1 char mehr, für die \0 am Ende
+	static char buffer[2]; // 1 char mehr, fÃ¼r die \0 am Ende
 	int cursor = 0;
 	char c;
 
 	while(1) { // Endlosschleife, kann nur per "break;" verlassen werden
 		c = getch();
 
-		// Auf Steuerzeichen prüfen:
+		// Auf Steuerzeichen prÃ¼fen:
 		if (c == 13 || c == 10) {
-			// <Return> - Eingabe abschließen?
+			// <Return> - Eingabe abschlieÃŸen?
 			if (textEingabeAcceptEmpty || cursor > 0) break;
 		} else {
 			// also ein "normales" Zeichen:
@@ -148,7 +148,7 @@ char * textEingabeEinZeichenOhneEcho(void) {
 
 		if (cursor == 1) break; // wir haben ein Zeichen, let's go!
 
-	} // Auf das nächste Eingabezeichen warten
+	} // Auf das nÃ¤chste Eingabezeichen warten
 
 	buffer[cursor] = '\0'; // Wir bauen ordentliche 0-terminierte Strings...
 
@@ -156,23 +156,23 @@ char * textEingabeEinZeichenOhneEcho(void) {
 }
 
 char * textEingabeEinZeichenAusMengeOhneEcho(char * allowedCharSet) {
-	static char buffer[2]; // 1 char mehr, für die \0 am Ende
+	static char buffer[2]; // 1 char mehr, fÃ¼r die \0 am Ende
 	int cursor = 0;
 	char c;
 
 	while(1) { // Endlosschleife, kann nur per "break;" verlassen werden
 		c = getch();
 
-		// Auf Steuerzeichen prüfen:
+		// Auf Steuerzeichen prÃ¼fen:
 		if (c == 13 || c == 10) {
-			// <Return> - Eingabe abschließen?
+			// <Return> - Eingabe abschlieÃŸen?
 			if (textEingabeAcceptEmpty || cursor > 0) break;
 		} else {
 			// also ein "normales" Zeichen:
 
 			// wenn das Zeichen erlaubt ist:
 			if (setContainsAtom(allowedCharSet, c)) {
-				// das Zeichen wird angehängt:
+				// das Zeichen wird angehÃ¤ngt:
 				buffer[cursor] = c;
 				cursor ++;
 			}
@@ -180,7 +180,7 @@ char * textEingabeEinZeichenAusMengeOhneEcho(char * allowedCharSet) {
 
 		if (cursor == 1) break; // wir haben ein Zeichen, let's go!
 
-	} // Auf das nächste Eingabezeichen warten
+	} // Auf das nÃ¤chste Eingabezeichen warten
 
 	buffer[cursor] = '\0'; // Wir bauen ordentliche 0-terminierte Strings...
 	printf("\n");
@@ -202,24 +202,24 @@ int strpos(char needle, char* haystack) {
 /**
  * spezialisierte Eingabe-Funktion laut Aufgabe am 15.05.2018
  *
- * Akzeptiert positive und negative Fließkomma- und Ganzzahlen mit einer
+ * Akzeptiert positive und negative FlieÃŸkomma- und Ganzzahlen mit einer
  * festgelegten maximalen Anzahl Vor- und Nachkommastellen.
  *
- * Akzeptiert kein führendes Komma (ggf. muss eine Null vor dem Komma
+ * Akzeptiert kein fÃ¼hrendes Komma (ggf. muss eine Null vor dem Komma
  * eingegeben werden).
  */
 double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
-	// Nach längerem Überlegen könnte man die Gültigkeit der Zahl
-	// während und am Ende der Eingabe auch mit regulären Ausdrücken
-	// überprüfen - wobei die Beschränkung der Anzahl Stellen noch nicht
-	// berücksichtigt ist. Die Akzeptanz-Prüfung, wenn ein Zeichen
+	// Nach lÃ¤ngerem Ãœberlegen kÃ¶nnte man die GÃ¼ltigkeit der Zahl
+	// wÃ¤hrend und am Ende der Eingabe auch mit regulÃ¤ren AusdrÃ¼cken
+	// Ã¼berprÃ¼fen - wobei die BeschrÃ¤nkung der Anzahl Stellen noch nicht
+	// berÃ¼cksichtigt ist. Die Akzeptanz-PrÃ¼fung, wenn ein Zeichen
 	// eingegeben wird bzw. die Eingabe abgeschlossen werden soll,
-	// würde sich allerdings vereinfachen.
+	// wÃ¼rde sich allerdings vereinfachen.
 	//
-	// Gültigkeit einer Eingabe (Zeichen oder Backspace):
+	// GÃ¼ltigkeit einer Eingabe (Zeichen oder Backspace):
 	// (^$)|(^-$)|^-?(0|([1-9]+[0-9]*))([,\.][0-9]*)?$
 	//
-	// Gültigkeit der kompletten Eingabe:
+	// GÃ¼ltigkeit der kompletten Eingabe:
 	// ^-?(0|([1-9]+[0-9]*))([,\.][0-9]+)?$
 
 	if (maxVorKommaStellen < 1) {
@@ -228,11 +228,11 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 	}
 	flagLeereEingabe = 0;
 
-	int maxLength = maxVorKommaStellen + maxNachKommaStellen + 2; // 1 fürs Minus, 1 fürs Komma
-		// keine Buffer-Overruns akzeptieren: ggf. maxLength beschränken:
+	int maxLength = maxVorKommaStellen + maxNachKommaStellen + 2; // 1 fÃ¼rs Minus, 1 fÃ¼rs Komma
+		// keine Buffer-Overruns akzeptieren: ggf. maxLength beschrÃ¤nken:
 		if (maxLength > TEXTEINGABE_BUFFER_SIZE - 1) maxLength = TEXTEINGABE_BUFFER_SIZE - 1;
 
-	static char buffer[TEXTEINGABE_BUFFER_SIZE]; // 1 char mehr, für die \0 am Ende
+	static char buffer[TEXTEINGABE_BUFFER_SIZE]; // 1 char mehr, fÃ¼r die \0 am Ende
 	int i=0;
 	// den Puffer initialisieren, sicher ist sicher...
 	for (i=0; i<TEXTEINGABE_BUFFER_SIZE; i++) buffer[i] = '\0';
@@ -252,9 +252,9 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 
 		c = getch();
 
-		// Zeichen-"Klasse" prüfen:
+		// Zeichen-"Klasse" prÃ¼fen:
 		if (c == 13 || c == 10) {
-			// Return - Eingabe abschließen?
+			// Return - Eingabe abschlieÃŸen?
 			if (cursor == 0) {
 				if (textEingabeAcceptEmpty) break;
 			} else {
@@ -267,17 +267,17 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 		} else if (c == 8 || c == 127) {
 			// Backspace
 			if (cursor > 0) {
-				// nur dann verarbeiten, wenn wir tatsächlich mindesten ein Zeichen haben
+				// nur dann verarbeiten, wenn wir tatsÃ¤chlich mindesten ein Zeichen haben
 
 				#ifdef _WIN32
-				printf("%c %c",c ,c); // BS, Leerzeichen zum Löschen, wieder BS...
+				printf("%c %c",c ,c); // BS, Leerzeichen zum LÃ¶schen, wieder BS...
 				#endif
 
 				#ifdef __linux__
 				// Unter Linux geht der Backspace-Support wohl nicht ohne \r oder explizite Positionierung des Cursors...
 				int i;
 
-				// Erste Runde: Alles (+1 Zeichen) mit Leerzeichen überschreiben:
+				// Erste Runde: Alles (+1 Zeichen) mit Leerzeichen Ã¼berschreiben:
 				printf("\r");
 				for (i=0; i<cursor; i++) printf(" ");
 
@@ -298,35 +298,35 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 			buffer[cursor] = c;
 			cursor ++;
 		} else if (cursor < maxLength) {
-			// also ein Text-Zeichen, und die Länge ist unter Maximum:
+			// also ein Text-Zeichen, und die LÃ¤nge ist unter Maximum:
 
 			// wenn das Zeichen erlaubt ist:
 			if (setContainsAtom(DEZIMAL_ZIFFERN, c)) {
 				int okay = -1; // erstmal davon ausgehen, dass das Zeichen akzeptabel ist
 				if (kommaPos < 0) {
-					// es wäre eine Vorkommastelle:
+					// es wÃ¤re eine Vorkommastelle:
 					if (vorKommaStellen >= maxVorKommaStellen) okay = 0;
 				} else {
-					// es wäre eine Nachkommastelle:
+					// es wÃ¤re eine Nachkommastelle:
 					if (nachKommaStellen >= maxNachKommaStellen) okay = 0;
 				}
-				if (fuehrendeNull && kommaPos < 0) okay = 0; // Ziffer würde ohne Komma auf führende Null folgen...
+				if (fuehrendeNull && kommaPos < 0) okay = 0; // Ziffer wÃ¼rde ohne Komma auf fÃ¼hrende Null folgen...
 
 				if (okay) {
-					// das Zeichen wird angehängt:
+					// das Zeichen wird angehÃ¤ngt:
 					printf("%c", c);
 					buffer[cursor] = c;
 					cursor ++;
 				} else {
-					// nop - wegen Stellenbeschränkung ignorieren
+					// nop - wegen StellenbeschrÃ¤nkung ignorieren
 				}
 			} else if (
-				setContainsAtom(KOMMA_ZEICHEN, c) // wäre ein Komma,
-				&& cursor > (istNegativ?1:0) // wäre kein führendes Komma,
+				setContainsAtom(KOMMA_ZEICHEN, c) // wÃ¤re ein Komma,
+				&& cursor > (istNegativ?1:0) // wÃ¤re kein fÃ¼hrendes Komma,
 				&& kommaPos < 0 // es gibt noch kein Komma,
-				&& maxNachKommaStellen > 0 // und es dürfen generell Nachkommastellen eingegeben werden.
+				&& maxNachKommaStellen > 0 // und es dÃ¼rfen generell Nachkommastellen eingegeben werden.
 			) {
-				// ein Komma wird angehängt:
+				// ein Komma wird angehÃ¤ngt:
 				c = '.';
 				printf("%c", c);
 				buffer[cursor] = c;
@@ -352,9 +352,9 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 		}
 		if (istNegativ) vorKommaStellen --;
 
-	} // Schleife: Auf das nächste Eingabezeichen warten
+	} // Schleife: Auf das nÃ¤chste Eingabezeichen warten
 
-	// Eingabe abschließen:
+	// Eingabe abschlieÃŸen:
 	printf("\n");
 	buffer[cursor] = '\0'; // wir bauen ordentliche 0-terminierte Strings...
 
@@ -365,7 +365,7 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 	}
 
 
-	// Rückgabewert berechnen:
+	// RÃ¼ckgabewert berechnen:
 	double retval = 0.0d;
 
 	// Vorkomma-Anteil:
@@ -392,6 +392,17 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 	if (istNegativ) retval *= -1.0d;
 
 	return retval;
+}
+
+/**
+ * gibt eine Meldung aus und wartet dann dementsprechend auf einen Tastendruck.
+ */
+void warteAufTaste() {
+	printf("\nBitte drÃ¼cken Sie zum Fortsetzen eine Taste. ");
+	// globales "Flag" fÃ¼r die Eingabe: auch leere Eingabe akzeptieren:
+	textEingabeAcceptEmpty = -1; // siehe lib/texteingabe.c
+	// auf eine Taste warten, aber die Eingabe ignorieren / verwerfen:
+	textEingabeEinZeichenOhneEcho();
 }
 
 
