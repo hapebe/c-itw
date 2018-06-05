@@ -1,4 +1,4 @@
-Die ist ein Satz mit X. Sonst nix!
+Dies ist ein Satz mit X. Sonst nix!
 
 Wirklich nicht!
 Basta.
