@@ -52,11 +52,32 @@ void init() {
 
 	// TODO: wenn Datenbank auf der Festplatte existiert, diese gleich
 	// wieder einlesen
+	FILE * f = fopen("./klimageraete.dat", "r");
+	if (f != NULL) {
+		// Datensätze nacheinander einlesen
+		for (i=0; ; i++) {
+			// wenn Rückgabewert (Anzahl der tatsächlich gelesenen Datensätze...) anders als 1 --> abbrechen!
+			if (fread(&klimageraete[i], sizeof klimageraete[0], 1, f) != 1) break;
+		}
+		fclose(f);
+	}
 }
 
 void destroy() {
 	// TODO: wenn Datensätze existieren, diese als Datei sichern.
 	// Sonst möglicherweise bestehende Datei löschen.
+
+	FILE * f = fopen("./klimageraete.dat", "w");
+	if (f != NULL) {
+		// nur belegte Datensätze nacheinander schreiben
+		int i;
+		for (i=0; i<MAX_GERAETE; i++) {
+			if (!istFreiesGeraet(&klimageraete[i])) {
+				fwrite(&klimageraete[i], sizeof klimageraete[0], 1, f);
+			}
+		}
+		fclose(f);
+	}
 }
 
 void hauptMenu() {
