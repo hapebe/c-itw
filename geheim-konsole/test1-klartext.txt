@@ -1,0 +1,1 @@
+Das ist ein ganz anderer Text, der verschlüsselt werden soll. 1234 Ende. 

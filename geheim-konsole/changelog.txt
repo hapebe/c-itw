@@ -1,0 +1,28 @@
+Umbau von "geheim" zur nicht-interaktiven Konsolen-Anwendung
+
+Plan
+1. Bestehendes Programm (Autor Harald) verstehen
+  Variablen auswahl, dateiname, passwort...
+  Variablen erweitern dateiname --> qDateiname, zusätzlich zDateiname
+  Funktionen verSchl() und entSchl() - weitgehend beibehalten!
+2. Schleife über alle Elemente von argv[]
+  Wenn das erste Zeichen NICHT '/' ist: ignorieren...
+  SWITCH mit dem zweiten Zeichen des Wertes:
+	'v' -> auswahl='v'
+	'e' -> auswahl='e'
+	'q' -> qDateiname=Wert AB DEM 3. ZEICHEN
+	'z' -> zDateiname=Wert AB DEM 3. ZEICHEN
+	'p' -> passwort=Wert AB DEM 3. ZEICHEN
+3. Prüfen: Haben wir eine auswahl, eine Quelldatei und ein Passwort? Wenn nicht: Abbruch
+4. Entweder verSchl() oder entSchl() mit den übergebenen Argumenten ausführen. 
+  ABER: Neu ist, dass wir entweder eine Zieldatei haben oder nicht - wenn nicht, dann auf Bildschirm auverI$tassgeben.
+
+
+Änderungen
+1. Signatur (Parameterliste) von main() ändern
+2. Variablen qDateiname und zDateiname vorbereitet
+3. Schleife über alle "Argumente"...
+	erstes und zweites Zeichen der Argumente gesondert betrachten; Text-Werte (Dateinamen oder Kennwort) fangen erst beim dritten Zeichen an!
+4. switch/case geändert: Fälle aus dem Menü übernommen, aber auch für Dateinamen erstmal nur gespeichert.
+5. Fehlermeldungen, wenn ein nötiges Argument fehlt.
+6. entSchl() und verSchl() jeweils mit drittem Parameter versehen: zDateiname. Wenn dieser leer ist, wird stattdessen stdout verwendet.
