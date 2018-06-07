@@ -1,5 +1,5 @@
 // zum Abschalten unbedingt AUSKOMMENTIEREN, nicht auf 0 setzen oder so!
-#define DEBUG 1
+// #define DEBUG 1
 
 #include "lib/klimageraete-global.c"
 #include "lib/klimageraete-core.c" // alles, was direkt die Verarbeitung des Typs "t_klimageraet" betrifft
@@ -64,9 +64,13 @@ void init() {
 }
 
 void destroy() {
-	// TODO: wenn Datensätze existieren, diese als Datei sichern.
-	// Sonst möglicherweise bestehende Datei löschen.
+	// Bildschirm löschen, damit nicht das Menü stehen bleibt und
+	// irritiert.
+	cls();
 
+
+	// TODO: Wenn keine Datensätze vorhanden sind, Datei löschen.
+	int erfolg = 0;
 	FILE * f = fopen("./klimageraete.dat", "w");
 	if (f != NULL) {
 		// nur belegte Datensätze nacheinander schreiben
@@ -77,6 +81,13 @@ void destroy() {
 			}
 		}
 		fclose(f);
+		erfolg = -1;
+	}
+
+	if (erfolg) {
+		printf("Die Datenbank mit %d Klimageräten wurde gespeichert.\n", nGeraete());
+	} else {
+		fprintf(stderr, "Die Datenbank mit den Klimageräten konnte nicht gespeichert werden!\n");
 	}
 }
 

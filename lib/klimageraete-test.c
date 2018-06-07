@@ -14,6 +14,10 @@ void initTest() {
 	// benutzt globale Variablen:
 	// struct t_klimageraete klimageraete[MAX_GERAETE];
 
+	// wenn an dieser Stelle schon Geräte vorhanden sind, dann NICHT
+	// die Testdaten anlegen:
+	if (nGeraete() > 0) return;
+
 	int i;
 	struct t_klimageraet * ptr;
 
