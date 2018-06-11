@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 
-#define MAX 5
+#define MAX 100
 
 struct modell
 {
@@ -14,8 +14,6 @@ struct modell
 	int tiefe;
 	double preis;
 };
-
-
 
 void gotoxy(int x, int y)
 {

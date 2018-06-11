@@ -86,8 +86,14 @@ char *eingabeBezeichnung(void)
 		do
 		{
 			temp=getch();
-		}while(!(temp>=48 && temp<=57)&& temp!=13 && temp!=8 &&
-					!(temp>=65 && temp<=90)&&!(temp>=97 && temp<=122));
+		}while(
+			!(temp>=48 && temp<=57) // Ziffern
+			&& temp!=32	// Leerzeichen
+			&& !(temp>=65 && temp<=90) // Großbuchstaben
+			&& !(temp>=97 && temp<=122) // Kleinbuchstaben
+			&& temp!=13 // <Return>
+			&& temp!=8 // <Backspace>
+		);
 		if(temp!=8 && temp!=13 && i<30)
 		{
 			putch(temp);
@@ -106,43 +112,46 @@ char *eingabeBezeichnung(void)
 	return(tempArray);
 };
 
-void ausgabe(struct modell *ptrBezeichnung)
-{
-	int i;
-	system("cls");
-		printf(" Nr ");
-		printf("%30s ","Bezeichnung");
-		printf("%10s","K/Watt");
-		printf("%10s","V/Watt");
-		printf("%20s","Abmessung(H/B/T)");
-		printf("  %5s \n","Preis");
-	// for(i=0;i<MAX;i++)
-	i=0;
-	{
-		if((ptrBezeichnung+i)->bezeichnung[0]!='\0')
-		{
-			printf(" %2d ",i+1);
-			printf("%30s ",(ptrBezeichnung+i)->bezeichnung);
-			printf("%10d",(ptrBezeichnung+i)->kleistung);
-			printf("%10d",(ptrBezeichnung+i)->verbrauch);
-			printf("   %5dx",(ptrBezeichnung+i)->hoehe);
-			printf("%5dx",(ptrBezeichnung+i)->breite);
-			printf("%5d ",(ptrBezeichnung+i)->tiefe);
-			printf(" %7.2f\n",(ptrBezeichnung+i)->preis);
-		}
-	}
-	printf("\0");
-	system("pause");
-}
 
 void tabellenHeader() {
-		printf(" Nr ");
-		printf("%30s ","Bezeichnung");
-		printf("%10s","K/Watt");
-		printf("%10s","V/Watt");
-		printf("%20s","Abmessung(H/B/T)");
-		printf("  %5s ","Preis");
-		printf("\n");
+	printf(" Nr ");
+	printf("%30s ","Bezeichnung");
+	printf("%10s","K/Watt");
+	printf("%10s","V/Watt");
+	printf("%20s","Abmessung(H/B/T)");
+	printf("  %5s ","Preis");
+	printf("\n");
 }
 
+void ausgabeZeile(int nr, struct modell *geraet) {
+	printf(" %2d ",nr);
+	printf("%30s ",geraet->bezeichnung);
+	printf("%10d",geraet->kleistung);
+	printf("%10d",geraet->verbrauch);
+	printf("   %5dx",geraet->hoehe);
+	printf("%5dx",geraet->breite);
+	printf("%5d ",geraet->tiefe);
+	printf(" %7.2f",geraet->preis);
+	printf("\n");
+}
+
+
+void eingabe(struct modell *geraet) {
+	printf("\nBezeichnung: ");
+		strcpy(geraet->bezeichnung,eingabeBezeichnung());
+	printf("\nK\204lteleistung(Watt): ");
+		geraet->kleistung=(int)eDouble(4,0);
+	printf("\nVerbrauch(Watt): ");
+		geraet->verbrauch=(int)eDouble(4,0);
+	printf("\nAbmessungen in mm");
+	printf("\n=================");
+	printf("\nH\224he: ");
+		geraet->hoehe=(int)eDouble(5,0);
+	printf("\nBreite: ");
+		geraet->breite=(int)eDouble(5,0);
+	printf("\nTiefe: ");
+		geraet->tiefe=(int)eDouble(5,0);
+	printf("\nPreis: ");
+		geraet->preis=eDouble(4,2);
+}
 

@@ -27,14 +27,7 @@ void sKaelteleistung() {
 		if(geraet->bezeichnung[0]!='\0' ) {	
 			if (geraet->kleistung>=min && geraet->kleistung <=max) {
 				if (i==0) tabellenHeader();
-				printf(" %2d ",i+1);
-				printf("%30s ",geraet->bezeichnung);
-				printf("%10d",geraet->kleistung);
-				printf("%10d",geraet->verbrauch);
-				printf("   %5dx",geraet->hoehe);
-				printf("%5dx",geraet->breite);
-				printf("%5d ",geraet->tiefe);
-				printf(" %7.2f\n",geraet->preis);
+				ausgabeZeile(i+1, geraet);
 				i ++;
 			}
 		}
@@ -76,14 +69,7 @@ void sVerbrauch() {
 		if(geraet->bezeichnung[0]!='\0' ) {	
 			if(geraet->verbrauch>=min && geraet->verbrauch<=max) {
 				if (i==0) tabellenHeader();
-				printf(" %2d ",i+1);
-				printf("%30s ",geraet->bezeichnung);
-				printf("%10d",geraet->kleistung);
-				printf("%10d",geraet->verbrauch);
-				printf("   %5dx",geraet->hoehe);
-				printf("%5dx",geraet->breite);
-				printf("%5d ",geraet->tiefe);
-				printf(" %7.2f\n",geraet->preis);
+				ausgabeZeile(i+1, geraet);
 				i ++;
 			}
 		}
@@ -125,14 +111,7 @@ void sPreis() {
 		if(geraet->bezeichnung[0]!='\0' ) {	
 			if (geraet->preis>=min && geraet->preis<=max) {
 				if (i==0) tabellenHeader();
-				printf(" %2d ",i+1);
-				printf("%30s ",geraet->bezeichnung);
-				printf("%10d",geraet->kleistung);
-				printf("%10d",geraet->verbrauch);
-				printf("   %5dx",geraet->hoehe);
-				printf("%5dx",geraet->breite);
-				printf("%5d ",geraet->tiefe);
-				printf(" %7.2f\n",geraet->preis);
+				ausgabeZeile(i+1, geraet);
 				i ++;
 			}
 		}
@@ -190,14 +169,7 @@ void sAbmessung() {
 			&& (geraet->tiefe>=minTiefe && geraet->tiefe <=maxTiefe)	
 		) {
 			if (i==0) tabellenHeader();
-			printf(" %2d ",i+1);
-			printf("%30s ",geraet->bezeichnung);
-			printf("%10d",geraet->kleistung);
-			printf("%10d",geraet->verbrauch);
-			printf("   %5dx",geraet->hoehe);
-			printf("%5dx",geraet->breite);
-			printf("%5d ",geraet->tiefe);
-			printf(" %7.2f\n",geraet->preis);
+			ausgabeZeile(i+1, geraet);
 			i ++;
 		}
 	}
@@ -235,14 +207,7 @@ void sBezeichnung() {
 		if(geraet->bezeichnung[0]!='\0' ) {	
 			if(vBezeichnung(suchbegriff,geraet->bezeichnung)==1) {
 				if (i==0) tabellenHeader();
-				printf(" %2d ",i+1);
-				printf("%30s ",geraet->bezeichnung);
-				printf("%10d",geraet->kleistung);
-				printf("%10d",geraet->verbrauch);
-				printf("   %5dx",geraet->hoehe);
-				printf("%5dx",geraet->breite);
-				printf("%5d ",geraet->tiefe);
-				printf(" %7.2f\n",geraet->preis);
+				ausgabeZeile(i+1, geraet);
 				i ++;
 			}
 		}

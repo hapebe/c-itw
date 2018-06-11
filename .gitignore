@@ -9,6 +9,7 @@ it5.dev
 it5.layout
 # Code::Blocks project files:
 codeblocks-project/**
+kllima2/**
 # 3rd party libraries:
 lib/wingetopt/**
 harald/**
