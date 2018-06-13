@@ -67,6 +67,21 @@ Hilfe ich unterscheiden kann, ob die Standard-Eingabe "interaktiv" von der
 Konsole stammt oder aus einer umgelenkten Datei bzw. einer "Pipe". Beispiel 
 siehe: [struct1.c](struct1.c)
 
+# C++ programmieren
+
+Neben den Grundlagen, die seit dem 12. Juni offiziell im Unterricht anstehen, 
+interessiere ich mich für grafische Oberflächen, gern auch in Verbindung mit
+Nicht-Standard-Bibliotheken und deren Einbindung in IDE und Compile-Skripts.
+
+## "Spiele programmieren lernen"
+
+Nach ein wenig Herumsurfen bin ich bei (https://www.spieleprogrammierer.de/wiki/Spiele_programmieren_lernen gelandet).
+Dort wird unter anderem SFML (Simple and Fast Multimedia Library) erwähnt, die 
+ich mir mal vornehme.
+
+Neben der [Installation unter Linux (Debian/Ubuntu)](https://www.sfml-dev.org/tutorials/2.5/start-linux.php) schaue ich mir die 
+[Integration in Code::Blocks](https://www.sfml-dev.org/tutorials/2.5/start-cb.php) an.
+
 ## Ideen, ToDos, Projekte
 * erledigt: QuickSort implementieren (http://www.zentut.com/c-tutorial/c-quicksort-algorithm/)
 * gute alte Zeiten: mal den Quellcode von German Atlantis 6.2 (6.6?) kompilieren und schauen, dass ich den Spiel-"Host" zum laufen bekomme.

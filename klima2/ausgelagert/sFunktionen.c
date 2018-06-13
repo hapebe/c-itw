@@ -15,7 +15,7 @@ void sKaelteleistung() {
 	
 	FILE * in;
 	
-	in = fopen(DATENBANK, "r");
+	in = fopen(DATENBANK, "r+b");
 	if (in == NULL) {
 		fprintf(stderr, "Konnte die Datenbank %s nicht zum Lesen öffnen!\n", DATENBANK);
 		system("pause");
@@ -57,7 +57,7 @@ void sVerbrauch() {
 	
 	FILE * in;
 	
-	in = fopen(DATENBANK, "r");
+	in = fopen(DATENBANK, "r+b");
 	if (in == NULL) {
 		fprintf(stderr, "Konnte die Datenbank %s nicht zum Lesen öffnen!\n", DATENBANK);
 		system("pause");
@@ -99,7 +99,7 @@ void sPreis() {
 	
 	FILE * in;
 	
-	in = fopen(DATENBANK, "r");
+	in = fopen(DATENBANK, "r+b");
 	if (in == NULL) {
 		fprintf(stderr, "Konnte die Datenbank %s nicht zum Lesen öffnen!\n", DATENBANK);
 		system("pause");
@@ -152,7 +152,7 @@ void sAbmessung() {
 	
 	FILE * in;
 	
-	in = fopen(DATENBANK, "r");
+	in = fopen(DATENBANK, "r+b");
 	if (in == NULL) {
 		fprintf(stderr, "Konnte die Datenbank %s nicht zum Lesen öffnen!\n", DATENBANK);
 		system("pause");
@@ -182,7 +182,7 @@ void sAbmessung() {
 };
 
 void sBezeichnung() {
-	char suchbegriff[31];
+	char suchbegriff[BEZEICHNUNG_MAX_L + 1];
 	struct modell buffer; // lokale Variable, reserviert auch den Speicher für eine Struktur
 	struct modell * geraet = &buffer;
 	
@@ -195,24 +195,26 @@ void sBezeichnung() {
 	
 	FILE * in;
 	
-	in = fopen(DATENBANK, "r");
+	in = fopen(DATENBANK, "r+b");
 	if (in == NULL) {
 		fprintf(stderr, "Konnte die Datenbank %s nicht zum Lesen öffnen!\n", DATENBANK);
 		system("pause");
 		return;
 	}
 	
-	int i=0;
+	int i=0, trefferCnt = 0;
 	while (fread(geraet, sizeof(struct modell), 1, in) == 1) {
-		if(geraet->bezeichnung[0]!='\0' ) {	
-			if(vBezeichnung(suchbegriff,geraet->bezeichnung)==1) {
-				if (i==0) tabellenHeader();
-				ausgabeZeile(i+1, geraet);
-				i ++;
-			}
+		i ++;
+		// wenn nicht belegt / frei / ungültig: nächstes Gerät
+		if(geraet->bezeichnung[0]=='\0' ) continue;
+		
+		if(vBezeichnung(suchbegriff,geraet->bezeichnung)==1) {
+			if (trefferCnt==0) tabellenHeader();
+			ausgabeZeile(i, geraet);
+			trefferCnt ++;
 		}
 	}
-	if (i==0) {
+	if (trefferCnt==0) {
 		printf("Leider keine Suchtreffer...\n");
 	}
 	

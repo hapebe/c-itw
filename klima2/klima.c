@@ -7,9 +7,9 @@
 
 int main(void)
 {
-	int i,nummer=0;
 	struct modell geraet;
 	char auswahl;
+	
 	while((auswahl=menue())!='x')
 	{
 		switch(auswahl)
@@ -23,9 +23,9 @@ int main(void)
 				break;
 			case '2': 
 				alleAusgeben(); system("pause"); break;
-		case '3': loeschen(); break;
-		case '4': ersetzen(); break;
-		case '5': sMenue(); break;
+			case '3': loeschen(); break;
+			case '4': ersetzen(); break;
+			case '5': sMenue(); break;
 		}
 	}
 	return 0;

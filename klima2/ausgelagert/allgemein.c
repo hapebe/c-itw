@@ -3,10 +3,11 @@
 #include <windows.h>
 
 #define MAX 100
+#define BEZEICHNUNG_MAX_L 30
 
 struct modell
 {
-	char bezeichnung[31];
+	char bezeichnung[BEZEICHNUNG_MAX_L + 1];
 	int kleistung;
 	int verbrauch;
 	int hoehe;
