@@ -20,9 +20,9 @@
 
 #define TEXTEINGABE_BUFFER_SIZE 257
 
-#define DEZIMAL_ZIFFERN (char[]){ '0','1','2','3','4','5','6','7','8','9','\0' }
-#define KOMMA_ZEICHEN (char[]){ '.',',','\0' }
-#define NEGATIV_ZEICHEN (char[]){ '-','\0' }
+char DEZIMAL_ZIFFERN[] = { '0','1','2','3','4','5','6','7','8','9','\0' };
+char KOMMA_ZEICHEN[] = { '.',',','\0' };
+char NEGATIV_ZEICHEN[] = { '-','\0' };
 
 // globale Variable, die zur Veränderung des Verhaltens von
 // texteingabe() geändert werden kann

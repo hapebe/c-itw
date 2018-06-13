@@ -1,0 +1,22 @@
+# depslib dependency file v1.0
+1528890289 source:/media/user/PC-09-shared/it5source/itw-cpp/main.cpp
+	<iostream>
+	"../lib/texteingabe.c"
+	"personen.cpp"
+
+1528894263 /media/user/PC-09-shared/it5source/itw-cpp/personen.cpp
+	<string>
+
+1528890470 /media/user/PC-09-shared/it5source/lib/texteingabe.c
+	<stdio.h>
+	<stdlib.h>
+	<conio.h>
+	"./getch.c"
+
+1527837315 /media/user/PC-09-shared/it5source/lib/getch.c
+	<stdio.h>
+	<termios.h>
+	<unistd.h>
+	<assert.h>
+	<string.h>
+

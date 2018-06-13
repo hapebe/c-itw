@@ -75,7 +75,7 @@ Nicht-Standard-Bibliotheken und deren Einbindung in IDE und Compile-Skripts.
 
 ## "Spiele programmieren lernen"
 
-Nach ein wenig Herumsurfen bin ich bei (https://www.spieleprogrammierer.de/wiki/Spiele_programmieren_lernen gelandet).
+Nach ein wenig Herumsurfen bin ich bei https://www.spieleprogrammierer.de/wiki/Spiele_programmieren_lernen gelandet.
 Dort wird unter anderem SFML (Simple and Fast Multimedia Library) erwähnt, die 
 ich mir mal vornehme.
 
@@ -97,7 +97,7 @@ Neben der [Installation unter Linux (Debian/Ubuntu)](https://www.sfml-dev.org/tu
 * in den Quellcode der GNU core-utils schauen (dort gibt es ja u.a. auch den sort-Befehl...)
 * mal über GUI-Programmierung mit GTK / QT (oder wie sie alle heißen...) nachlesen und vielleicht ein paar Fingerübungen machen
 * über make / Makefile etc. lesen und damit experimentieren (sowas gibt es u.a. ja auch bei den klassischen German-Atlantis-Quellen...)
-* irgendwie ähnlich zur make-Erkundung: bestehendes Projekt mit Code::Blocks "importieren" und versuchen zu kompilieren (Spoiler: mit den klimageraet.c-Dateien funktioniert es nicht auf Anhieb...)
+* **erledigt**: irgendwie ähnlich zur make-Erkundung: bestehendes Projekt mit Code::Blocks "importieren" und versuchen zu kompilieren (Spoiler: mit den klimageraet.c-Dateien funktioniert es nicht auf Anhieb...)
 * Doxygen anschauen: JavaDoc-ähnliche Dokumentation aus Kommentaren im Quelltext generieren?
   * "Moritz" ist ein PlugIn für Doxygen, dass Nassi-Shneiderman-Diagramme erstellt (aka "Struktogramme")
 * in Richtung "Schiffe versenken" als Projekt im itw-Unterricht: den Source-Code von "gnome-mines" studieren, dort etwas über die Oberflächen-Programmierung
