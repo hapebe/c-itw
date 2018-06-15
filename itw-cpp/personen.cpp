@@ -1,6 +1,16 @@
 #include <string>
+#include <windows.h>
 
 using namespace std;
+
+void gotoxy(int x, int y) {
+	COORD coord;
+	coord.X = x;
+	coord.Y = y;
+	
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleCursorPosition(h, coord);
+}
 
 struct person {
     string vorname;
@@ -17,7 +27,7 @@ int zahleneingabe(void) {
     // Return? Wenn mindestens ein Zeichen vorhanden; Eingabe abschließen
 
     // s als Zahl interpretieren
-    return stoi(s);
+    return atoi(s.c_str());
 }
 
 void eingabe(person * p) {

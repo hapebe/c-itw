@@ -35,7 +35,7 @@ void rechtsAuffuellen(char* dest, char* src, int l) {
 }
 
 void linksAuffuellen(char* dest, char* src, int l) {
-	if (dest == src) die("beim Aufruf von linksAuffuellen() dürfen Ein- und Ausgabepuffer nicht identisch sein!");
+	// if (dest == src) die("beim Aufruf von linksAuffuellen() dürfen Ein- und Ausgabepuffer nicht identisch sein!");
 
 	int i;
 

@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef _WIN32
 #include <conio.h>
@@ -40,6 +41,63 @@ int setContainsAtom(char * set, char atom) {
 		if (set[i] == atom) return -1; // found!
 	}
 	return 0; // not found
+}
+
+/**
+ * @return position von needle in haystack, oder -1, wenn das Zeichen nicht enthalten ist
+ */
+int strpos(char needle, char* haystack) {
+	int i;
+	for (i=0; haystack[i] != '\0';i++) {
+		if (haystack[i] == needle) return i;
+	}
+	return -1; // nicht enthalten!
+}
+
+double string2double(char * s) {
+	double retval = 0.0d;
+
+	int kommaPos = strpos('.', s);
+	int vorKommaStellen, nachKommaStellen, i;
+	
+	if (kommaPos < 0) {
+		// es gibt gar kein Komma in der Eingabe:
+		vorKommaStellen = strlen(s);
+		nachKommaStellen = 0;
+	} else {
+		vorKommaStellen = kommaPos;
+		nachKommaStellen = strlen(s) - kommaPos - 1;
+	}
+	// negativ?
+	int istNegativ = (strpos('-',s) == 0);
+	if (istNegativ) vorKommaStellen --;
+	
+
+	// Vorkomma-Anteil:
+	int vordersteZiffer = 0;
+	if (istNegativ) vordersteZiffer = 1;
+	int hintersteZiffer = vordersteZiffer + vorKommaStellen - 1;
+	
+		// printf("Vorkomma-Teil von %d bis %d...\n", vordersteZiffer, hintersteZiffer);
+	double stellenWert = 1.0d;
+	for (i=hintersteZiffer; i>=vordersteZiffer; i--) {
+		retval += (*(s+i)-48) * stellenWert;
+		stellenWert *= 10.0d; // ein Stelle nach links...
+	}
+
+	// Nachkomma-Anteil:
+	vordersteZiffer = kommaPos+1;
+	hintersteZiffer = vordersteZiffer + nachKommaStellen - 1;
+		// if (vordersteZiffer <= hintersteZiffer) printf("Nachkomma-Teil von %d bis %d...\n", vordersteZiffer, hintersteZiffer);
+	stellenWert = 1.0/10.0d;
+	for (i=vordersteZiffer; i <= hintersteZiffer; i++) {
+		retval += (*(s+i)-48) * stellenWert; // Ziffer an Position i
+		stellenWert /= 10.0d; // ein Stelle nach rechts...
+	}
+
+	if (istNegativ) retval *= -1.0d;
+
+	return retval;
 }
 
 char * texteingabeLengthSet(int maxLength, char * allowedCharSet) {
@@ -189,26 +247,9 @@ char * textEingabeEinZeichenAusMengeOhneEcho(char * allowedCharSet) {
 }
 
 /**
- * @return position von needle in haystack, oder -1, wenn das Zeichen nicht enthalten ist
+ * Eingabefunktion laut Aufgabe vom 14.6. - l�sst keine Eingabe gr��er als maxValue zu.
  */
-int strpos(char needle, char* haystack) {
-	int i;
-	for (i=0; haystack[i] != '\0';i++) {
-		if (haystack[i] == needle) return i;
-	}
-	return -1; // nicht enthalten!
-}
-
-/**
- * spezialisierte Eingabe-Funktion laut Aufgabe am 15.05.2018
- *
- * Akzeptiert positive und negative Fließkomma- und Ganzzahlen mit einer
- * festgelegten maximalen Anzahl Vor- und Nachkommastellen.
- *
- * Akzeptiert kein führendes Komma (ggf. muss eine Null vor dem Komma
- * eingegeben werden).
- */
-double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
+double fliesskommaEingabeMax(int maxVorKommaStellen, int maxNachKommaStellen, double maxValue) {
 	// Nach längerem Überlegen könnte man die Gültigkeit der Zahl
 	// während und am Ende der Eingabe auch mit regulären Ausdrücken
 	// überprüfen - wobei die Beschränkung der Anzahl Stellen noch nicht
@@ -311,6 +352,16 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 					if (nachKommaStellen >= maxNachKommaStellen) okay = 0;
 				}
 				if (fuehrendeNull && kommaPos < 0) okay = 0; // Ziffer würde ohne Komma auf führende Null folgen...
+				
+				if (okay) {
+					// w�rden wir den g�ltigen Zahlenbereich verlassen?
+					buffer[cursor] = c;
+					buffer[cursor+1] = '\0';
+					double fiktiv = string2double(&buffer[0]);
+					if (fiktiv > maxValue) okay = false;
+					// jedenfalls r�ckg�ngig machen:
+					buffer[cursor] = '\0';
+				}
 
 				if (okay) {
 					// das Zeichen wird angehängt:
@@ -318,7 +369,7 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 					buffer[cursor] = c;
 					cursor ++;
 				} else {
-					// nop - wegen Stellenbeschränkung ignorieren
+					// nop - wegen Stellenbeschränkung oder maxValue ignorieren
 				}
 			} else if (
 				setContainsAtom(KOMMA_ZEICHEN, c) // wäre ein Komma,
@@ -364,34 +415,20 @@ double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
 		return 0.0;
 	}
 
+	return string2double(&buffer[0]);
+}
 
-	// Rückgabewert berechnen:
-	double retval = 0.0d;
-
-	// Vorkomma-Anteil:
-	int vordersteZiffer = 0;
-	if (istNegativ) vordersteZiffer = 1;
-	int hintersteZiffer = vordersteZiffer + vorKommaStellen - 1;
-		// printf("Vorkomma-Teil von %d bis %d...\n", vordersteZiffer, hintersteZiffer);
-	double stellenWert = 1.0d;
-	for (i=hintersteZiffer; i>=vordersteZiffer; i--) {
-		retval += ((int)buffer[i]-48) * stellenWert;
-		stellenWert *= 10.0d; // ein Stelle nach links...
-	}
-
-	// Nachkomma-Anteil:
-	vordersteZiffer = kommaPos+1;
-	hintersteZiffer = vordersteZiffer + nachKommaStellen - 1;
-		// if (vordersteZiffer <= hintersteZiffer) printf("Nachkomma-Teil von %d bis %d...\n", vordersteZiffer, hintersteZiffer);
-	stellenWert = 1.0/10.0d;
-	for (i=vordersteZiffer; i <= hintersteZiffer; i++) {
-		retval += ((int)buffer[i]-48) * stellenWert; // Ziffer an Position i
-		stellenWert /= 10.0d; // ein Stelle nach rechts...
-	}
-
-	if (istNegativ) retval *= -1.0d;
-
-	return retval;
+/**
+ * spezialisierte Eingabe-Funktion laut Aufgabe am 15.05.2018
+ *
+ * Akzeptiert positive und negative Fließkomma- und Ganzzahlen mit einer
+ * festgelegten maximalen Anzahl Vor- und Nachkommastellen.
+ *
+ * Akzeptiert kein führendes Komma (ggf. muss eine Null vor dem Komma
+ * eingegeben werden).
+ */
+double fliesskommaEingabe(int maxVorKommaStellen, int maxNachKommaStellen) {
+	return fliesskommaEingabeMax(maxVorKommaStellen, maxNachKommaStellen, 1e200);
 }
 
 /**
