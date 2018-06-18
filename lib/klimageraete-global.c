@@ -11,6 +11,15 @@
 #include "./string-utils.c"
 #include "./texteingabe.c"
 
+// globale Variable für die MySQL-Connection. Wird in init() gesetzt.
+MYSQL *con;
+
+void finishWithError(MYSQL *con) {
+	fprintf(stderr, "%s\n", mysql_error(con));
+	mysql_close(con);
+	exit(1);
+}
+
 /**
  * löscht den Konsolen-Bildschirm
  * (tricky wegen Unterschieden Windows/Linux)

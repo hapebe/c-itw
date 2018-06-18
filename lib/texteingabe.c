@@ -59,7 +59,7 @@ double string2double(char * s) {
 
 	int kommaPos = strpos('.', s);
 	int vorKommaStellen, nachKommaStellen, i;
-	
+
 	if (kommaPos < 0) {
 		// es gibt gar kein Komma in der Eingabe:
 		vorKommaStellen = strlen(s);
@@ -71,13 +71,13 @@ double string2double(char * s) {
 	// negativ?
 	int istNegativ = (strpos('-',s) == 0);
 	if (istNegativ) vorKommaStellen --;
-	
+
 
 	// Vorkomma-Anteil:
 	int vordersteZiffer = 0;
 	if (istNegativ) vordersteZiffer = 1;
 	int hintersteZiffer = vordersteZiffer + vorKommaStellen - 1;
-	
+
 		// printf("Vorkomma-Teil von %d bis %d...\n", vordersteZiffer, hintersteZiffer);
 	double stellenWert = 1.0d;
 	for (i=hintersteZiffer; i>=vordersteZiffer; i--) {
@@ -352,13 +352,13 @@ double fliesskommaEingabeMax(int maxVorKommaStellen, int maxNachKommaStellen, do
 					if (nachKommaStellen >= maxNachKommaStellen) okay = 0;
 				}
 				if (fuehrendeNull && kommaPos < 0) okay = 0; // Ziffer wÃ¼rde ohne Komma auf fÃ¼hrende Null folgen...
-				
+
 				if (okay) {
 					// würden wir den gültigen Zahlenbereich verlassen?
 					buffer[cursor] = c;
 					buffer[cursor+1] = '\0';
 					double fiktiv = string2double(&buffer[0]);
-					if (fiktiv > maxValue) okay = false;
+					if (fiktiv > maxValue) okay = 0;
 					// jedenfalls rückgängig machen:
 					buffer[cursor] = '\0';
 				}

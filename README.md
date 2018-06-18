@@ -82,6 +82,22 @@ ich mir mal vornehme.
 Neben der [Installation unter Linux (Debian/Ubuntu)](https://www.sfml-dev.org/tutorials/2.5/start-linux.php) schaue ich mir die 
 [Integration in Code::Blocks](https://www.sfml-dev.org/tutorials/2.5/start-cb.php) an.
 
+## MySQL
+
+Am 18. Juni habe ich auf dem Debian-Router MySQL installiert; und einen 
+namentlichen User für mich, der übers Netz zugreifen darf. Jetzt geht es 
+mal ans probieren, wie Datenbank und C zusammenspielen - am Beispiel des 
+"Klima"-Programms.
+
+Ausgangspunkt: http://zetcode.com/db/mysqlc/ 
+
+Die erste Anweisung dort: Die entsprechenden Entwicklungs-Bibliotheken 
+installieren: `sudo apt-get install libmysqlclient-dev`
+
+Dann musste ich dem "Build-Target" in Geany (der benutzten IDE) diejenigen 
+GCC-Optionen anhängen, die das Kommando `mysql_config --cflags --libs` 
+liefert.
+
 ## Ideen, ToDos, Projekte
 * erledigt: QuickSort implementieren (http://www.zentut.com/c-tutorial/c-quicksort-algorithm/)
 * gute alte Zeiten: mal den Quellcode von German Atlantis 6.2 (6.6?) kompilieren und schauen, dass ich den Spiel-"Host" zum laufen bekomme.

@@ -142,6 +142,10 @@ int editXY(int x, int y, char * s, int maxLength, int modus) {
 	cout << s;
 	gotoxy(x+strlen(s), y);
 
+	if (maxLength > 255) {
+		fprintf(stderr, "Die Eingabefunktion editXY kann nicht mit String-Längen größer als 255 umgehen.");
+		exit(255);
+	}
 	char buffer[256];
 	strcpy(&buffer[0], s);
 

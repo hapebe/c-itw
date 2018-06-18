@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <stdio.h>
+#include <string.h>
 #include "../lib/string-utils.c"
 #ifndef AUTOS
 	#define AUTOS 1

@@ -1,6 +1,10 @@
 // zum Abschalten unbedingt AUSKOMMENTIEREN, nicht auf 0 setzen oder so!
 // #define DEBUG 1
 
+// für die DB-Anbindung:
+#include <my_global.h>
+#include <mysql.h>
+
 #include "lib/klimageraete-global.c"
 #include "lib/klimageraete-core.c" // alles, was direkt die Verarbeitung des Typs "t_klimageraet" betrifft
 #include "lib/klimageraete-suche.c"
@@ -39,6 +43,25 @@ int main(int argc, char** argv) {
 }
 
 void init() {
+	// printf("MySQL client version: %s\n", mysql_get_client_info()); exit(0);
+
+	// MySQL-Verbindung:
+	con = mysql_init(NULL);
+	if (con == NULL) {
+		finishWithError(con);
+	}
+
+	if (mysql_real_connect(con, "192.168.20.252", "hapebe", "GwPwF7QpsAs2", NULL, 0, NULL, 0) == NULL) {
+		finishWithError(con);
+	}
+
+	if (mysql_query(con, "SHOW CREATE DATABASE hapebe;")) {
+		finishWithError(con);
+	}
+
+	mysql_close(con);
+	exit(0);
+
 	int i=0;
 	for (i=0; i<MAX_GERAETE; i++) {
 		klimageraete[i].modellBezeichnung[0] = '\0';
@@ -67,6 +90,9 @@ void destroy() {
 	// Bildschirm löschen, damit nicht das Menü stehen bleibt und
 	// irritiert.
 	cls();
+
+	// Datenbank-Verbindung beenden:
+	mysql_close(con);
 
 
 	// TODO: Wenn keine Datensätze vorhanden sind, Datei löschen.
