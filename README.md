@@ -98,8 +98,8 @@ Dann musste ich dem "Build-Target" in Geany (der benutzten IDE) diejenigen
 GCC-Optionen anhängen, die das Kommando `mysql_config --cflags --libs` 
 liefert.
 
-Als Ergebnis funktioniert jetzt das Lesen und Schreiben mit der Datenbank
-- im ["Release" klima-v1.3](https://github.com/hapebe/c-itw/blob/klima-v1.3/klimageraete.c).
+Als Ergebnis funktioniert jetzt das Lesen und Schreiben mit der Datenbank -
+im ["Release" klima-v1.3](https://github.com/hapebe/c-itw/blob/klima-v1.3/klimageraete.c).
 
 ## Ideen, ToDos, Projekte
 * erledigt: QuickSort implementieren (http://www.zentut.com/c-tutorial/c-quicksort-algorithm/)
