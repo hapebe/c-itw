@@ -7,6 +7,7 @@
 
 #include "lib/klimageraete-global.c"
 #include "lib/klimageraete-core.c" // alles, was direkt die Verarbeitung des Typs "t_klimageraet" betrifft
+#include "lib/klimageraete-mysql.c" // MySQL-bezogene Funktionen
 #include "lib/klimageraete-suche.c"
 #ifdef DEBUG
 	#include "lib/klimageraete-test.c"
@@ -47,20 +48,13 @@ void init() {
 
 	// MySQL-Verbindung:
 	con = mysql_init(NULL);
-	if (con == NULL) {
-		finishWithError(con);
-	}
+	if (con == NULL) finishWithError(con);
+	if (mysql_real_connect(con, DB_HOST, DB_USER, DB_PASS, NULL, 0, NULL, 0) == NULL) finishWithError(con);
 
-	if (mysql_real_connect(con, "192.168.20.252", "hapebe", "GwPwF7QpsAs2", NULL, 0, NULL, 0) == NULL) {
-		finishWithError(con);
-	}
-
-	if (mysql_query(con, "SHOW CREATE DATABASE hapebe;")) {
-		finishWithError(con);
-	}
-
-	mysql_close(con);
-	exit(0);
+	// Tabelle auswählen:
+	char puffer[64]; puffer[0] = '\0'; char * p = &puffer[0];
+	strcat(p, "USE "); strcat(p, DB_NAME); strcat(p, ";"); // "USE klimageraete;"
+	if (mysql_query(con, p)) finishWithError(con);
 
 	int i=0;
 	for (i=0; i<MAX_GERAETE; i++) {
@@ -68,13 +62,19 @@ void init() {
 		filterKlimageraete[i] = FILTER_SICHTBAR;
 	}
 
-	// TODO: nach Tests raus:
 #ifdef DEBUG
-	initTest();
+	// legt einige Test-Datensätze an
+	// initTest();
 #endif
 
-	// TODO: wenn Datenbank auf der Festplatte existiert, diese gleich
-	// wieder einlesen
+	// liest Klimageräte aus der Datenbank:
+	klimageraeteFromDB(&klimageraete[0], MAX_GERAETE);
+
+
+	// nur, wenn etwas schiefgegangen ist (?) - Datei lesen:
+	if (nGeraete() > 0) return;
+
+	// wenn Datenbank auf der Festplatte existiert, diese gleich wieder einlesen
 	FILE * f = fopen("./klimageraete.dat", "r");
 	if (f != NULL) {
 		// Datensätze nacheinander einlesen
@@ -91,16 +91,13 @@ void destroy() {
 	// irritiert.
 	cls();
 
-	// Datenbank-Verbindung beenden:
-	mysql_close(con);
-
+	int i;
 
 	// TODO: Wenn keine Datensätze vorhanden sind, Datei löschen.
 	int erfolg = 0;
 	FILE * f = fopen("./klimageraete.dat", "w");
 	if (f != NULL) {
 		// nur belegte Datensätze nacheinander schreiben
-		int i;
 		for (i=0; i<MAX_GERAETE; i++) {
 			if (!istFreiesGeraet(&klimageraete[i])) {
 				fwrite(&klimageraete[i], sizeof klimageraete[0], 1, f);
@@ -109,6 +106,25 @@ void destroy() {
 		fclose(f);
 		erfolg = -1;
 	}
+
+	// ... und in der MySQL-Datenbank speichern:
+
+	// SQL-Befehl #1 - die Datenbank leeren:
+	char puffer[1024]; puffer[0] = '\0'; char * p = &puffer[0];
+	strcat(p, "DELETE FROM "); strcat(p, DB_TABLE);	strcat(p, ";");
+	if (mysql_query(con, p)) finishWithError(con);
+
+	for (i=0; i<MAX_GERAETE; i++) {
+		if (istFreiesGeraet(&klimageraete[i])) continue;
+
+		// gibt keinen Status zurück - im Fehlerfall wird das Programm
+		// direkt beendet
+		klimageraetToDB(&klimageraete[i]);
+	}
+	// Datenbank-Verbindung beenden:
+	mysql_close(con);
+
+
 
 	if (erfolg) {
 		printf("Die Datenbank mit %d Klimageräten wurde gespeichert.\n", nGeraete());

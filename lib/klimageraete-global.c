@@ -11,6 +11,12 @@
 #include "./string-utils.c"
 #include "./texteingabe.c"
 
+#define DB_HOST "192.168.20.252"
+#define DB_USER "hapebe"
+#define DB_PASS "GwPwF7QpsAs2"
+#define DB_NAME "klima"
+#define DB_TABLE "klimageraete"
+
 // globale Variable für die MySQL-Connection. Wird in init() gesetzt.
 MYSQL *con;
 
