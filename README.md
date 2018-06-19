@@ -98,6 +98,9 @@ Dann musste ich dem "Build-Target" in Geany (der benutzten IDE) diejenigen
 GCC-Optionen anhängen, die das Kommando `mysql_config --cflags --libs` 
 liefert.
 
+Als Ergebnis funktioniert jetzt das Lesen und Schreiben mit der Datenbank
+- im ["Release" klima-v1.3](https://github.com/hapebe/c-itw/blob/klima-v1.3/klimageraete.c).
+
 ## Ideen, ToDos, Projekte
 * erledigt: QuickSort implementieren (http://www.zentut.com/c-tutorial/c-quicksort-algorithm/)
 * gute alte Zeiten: mal den Quellcode von German Atlantis 6.2 (6.6?) kompilieren und schauen, dass ich den Spiel-"Host" zum laufen bekomme.
