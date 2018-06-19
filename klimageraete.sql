@@ -1,4 +1,4 @@
-/*Table structure for table `klimageraete` */
+/* Table structure for table `klimageraete` */
 DROP TABLE IF EXISTS `klimageraete`;
 
 CREATE TABLE `klimageraete` (
