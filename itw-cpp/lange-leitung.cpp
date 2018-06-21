@@ -120,7 +120,8 @@ int main() {
 
 	cout << "Bitte geben Sie das Leitungsmaterial ein (im Zweifelsfall \"Kupfer\"): ";
 	string material;
-	cin >> material;
+	getline(cin, material);
+	if (material.length() == 0) material = "Kupfer";
 	Stromkreis s(material);
 	// Rho ist damit gesetzt!
 	

@@ -88,6 +88,17 @@ class Leistung : public PhysGroesse {
 		const virtual void ausgabe(void) { cout << "Leistung=" << wert << "W"; }
 };
 
+/**
+ * Diese (überladene) Funktion ermöglicht es, Objekte der 
+ * Klasse "PhysGroesse" und deren abgeleitete Klassen
+ * direkt mit dem "<<"-Operator des ostream cout zu benutzen.
+ *
+ * Der "Modifier" const des 2. Parameters macht Probleme, 
+ * das Programm kann nur noch mit der Compiler-Option 
+ * "-fpermissive" übersetzt werden. Ohne das const-
+ * Schlüsselwort wird die Methode nicht als "Kandidat" 
+ * erkannt, wo sie eigentlich aufgerufen werden soll.
+ */
 ostream& operator<<(ostream& os, PhysGroesse const& x) {
 	if (typeid(x) == typeid(PhysGroesse)) {
 		os << "(PhysGroesse)";
@@ -136,22 +147,35 @@ Widerstand operator*(WiderstandJeStrecke rProL, Strecke l) {
 }
 
 
-/*
-int main(void) {
+/**
+ * Test- und Demo-Routine
+ */
+int RENAME_ME_main(void) {
 	Spannung u = Spannung(5); // 5 V...
 	Strom i = Strom(0.3); // 0,3 A...
 	
+	cout << "(direkt via cout) Spannung = " << u << endl;
+	cout << "(Methode ausgabe()) ";
 	u.ausgabe(); cout << endl;
+	
+	cout << "(Methode ausgabe()) ";
 	i.ausgabe(); cout << endl;
 	
+	cout << endl;
+	
 	Leistung p = u*i;
-	cout << "Leistung: " << p << endl;
+	cout << "berechnete Leistung = " << p << endl;
 	
+	cout << endl;
+
+	// "Polymorphismus" (?):
+	// obwohl r auf eine Variable vom Typ "PhysGroesse" zeigt, 
+	// werden Daten und Methode der Klasse "Widerstand" verwendet.
 	PhysGroesse * r = u/i;
-	cout << "Widerstand: " << *r << endl;
+	cout << "(direkt via cout) berechneter Widerstand = " << *r << endl;
+	cout << "(Methode ausgabe()) ";
+	r->ausgabe();
 	
-	cout << "Spannung: " << u << endl;
 	
 	return 0;
 }
-*/
