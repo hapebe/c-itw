@@ -4,32 +4,33 @@
 #include <iostream>
 #include <iomanip>
 #include <regex>
+#include "physik.cpp"
 
 using namespace std;
 
 class Stromkreis {
 	private:
 		string material;
-		double I; // Stromstärke
-		double l; // Leitungslänge (einfacher Weg!)
-		double rho; // spezifischer Widerstand
-		double A; // Leitungsquerschnitt
+		Strom I; // Stromstärke
+		Strecke l; // Leitungslänge (einfacher Weg!)
+		SpezifischerWiderstand rho; // spezifischer Widerstand
+		Flaeche A; // Leitungsquerschnitt
 		
 	public:
 		Stromkreis(string material) {
 			if (material.compare("Kupfer")==0) {
 				// this->rho = 0.0172; // Ohm * mm^2 / m
-				this->rho = 0.0178; // Ohm * mm^2 / m
+				this->rho.set(0.0178); // Ohm * mm^2 / m
 			} else if (material.compare("Silber")==0) {
-				this->rho = 0.01587; // Ohm * mm^2 / m
+				this->rho.set(0.01587); // Ohm * mm^2 / m
 			} else if (material.compare("Aluminium")==0) {
-				this->rho = 0.0265; // Ohm * mm^2 / m
+				this->rho.set(0.0265); // Ohm * mm^2 / m
 			} else if (material.compare("Messing")==0) {
-				this->rho = 7e-2; // Ohm * mm^2 / m  (e steht für "* 10 ^ ...")
+				this->rho.set(7e-2); // Ohm * mm^2 / m  (e steht für "* 10 ^ ...")
 			} else if (material.compare("Konstantan")==0) {
-				this->rho = 0.5; // Ohm * mm^2 / m
+				this->rho.set(0.5); // Ohm * mm^2 / m
 			} else if (material.compare("Meerwasser")==0) {
-				this->rho = 5e+5; // Ohm * mm^2 / m
+				this->rho.set(5e+5); // Ohm * mm^2 / m
 			} else {
 				cout << material << " ist ein unbekanntes Material." << endl;
 				exit(1);
@@ -41,31 +42,31 @@ class Stromkreis {
 			l = 100; // m
 			A = 2.5; // mm^2
 		}
-		void setI(double I) { this->I = I; };
-		void setL(double l) { this->l = l; };
-		void setRho(double rho) { this->rho = rho; };
-		void setA(double A) { this->A = A; };
+		void setI(double I) { this->I.set(I); };
+		void setL(double l) { this->l.set(l); };
+		void setRho(double rho) { this->rho.set(rho); };
+		void setA(double A) { this->A.set(A); };
 		string getMaterial(void) { return material; }
-		double getI(void) { return I; }
-		double getL(void) { return l; }
-		double getRho(void) { return rho; }
-		double getA(void) { return A; }
-		double getSpannungsAbfall() {
+		Strom getI(void) { return I; }
+		Strecke getL(void) { return l; }
+		SpezifischerWiderstand getRho(void) { return rho; }
+		Flaeche getA(void) { return A; }
+		Spannung getSpannungsAbfall() {
 			 // U = I * R
 			 return I * getLeitungsWiderstand();
 		}
-		double getLeitungsWiderstand() {
+		Widerstand getLeitungsWiderstand() {
 			// R = rho * l / A
 			// das *2 ist für reale Leitungen, die 2 Adern haben!
-			return rho * l / A * 2;
+			return rho / A * l * 2;
 		}
 		
 		void statusAusgeben(void) {
 			cout << "Stromkreis: Material ist " << material << ", ";
-			cout << "rho=" << rho << "Ohm*mm^2, ";
-			cout << "l=" << l << "m, ";
-			cout << "A=" << A << "mm^2, ";
-			cout << "I=" << I << "A";
+			cout << "rho=" << rho << ", ";
+			cout << "l=" << l << ", ";
+			cout << "A=" << A << ", ";
+			cout << "I=" << I;
 			cout << endl;
 		}
 	
@@ -138,9 +139,9 @@ int main() {
 	s.statusAusgeben();
 	
 	cout << "Es ergeben sich die folgenden Werte:" << endl;
-	cout << "Leitungswiderstand: " << s.getLeitungsWiderstand() << "Ohm" << endl;
-	cout << "Spannungsabfall: " << s.getSpannungsAbfall() << "V" << endl;
-	cout << "Verlustleistung: " << (s.getSpannungsAbfall()* s.getI()) << "W" << endl;
+	cout << "Leitungswiderstand: " << s.getLeitungsWiderstand() << endl;
+	cout << "Spannungsabfall: " << s.getSpannungsAbfall() << endl;
+	cout << "Verlustleistung: " << (s.getSpannungsAbfall()* s.getI()) << endl;
 	
     return 0;
 }
