@@ -16,7 +16,7 @@ class PhysGroesse {
 	
 	public:
 		PhysGroesse(void) { this->wert = 0; }
-		double get(void) { return this->wert; }
+		double const get(void) { return this->wert; }
 		void set(double V) { wert = V; }
 		
 		// const verspricht: es wird nichts an dem Objekt geändert!
@@ -26,7 +26,7 @@ class PhysGroesse {
 		}
 		// das hier habe ich hier aufgeschnappt:
 		// https://msdn.microsoft.com/en-us/library/1z2f6c2k.aspx
-		friend ostream& operator<<(ostream& os, const PhysGroesse& x);
+		// friend ostream& operator<<(ostream& os, const PhysGroesse& x);
 };
 
 
@@ -99,7 +99,7 @@ class Leistung : public PhysGroesse {
  * Schlüsselwort wird die Methode nicht als "Kandidat" 
  * erkannt, wo sie eigentlich aufgerufen werden soll.
  */
-ostream& operator<<(ostream& os, PhysGroesse const& x) {
+ostream& operator<<(ostream& os, PhysGroesse const & x) {
 	if (typeid(x) == typeid(PhysGroesse)) {
 		os << "(PhysGroesse)";
 	} else if (typeid(x) == typeid(Strecke)) {
@@ -150,7 +150,7 @@ Widerstand operator*(WiderstandJeStrecke rProL, Strecke l) {
 /**
  * Test- und Demo-Routine
  */
-int RENAME_ME_main(void) {
+int adsf_main(void) {
 	Spannung u = Spannung(5); // 5 V...
 	Strom i = Strom(0.3); // 0,3 A...
 	
@@ -175,7 +175,7 @@ int RENAME_ME_main(void) {
 	cout << "(direkt via cout) berechneter Widerstand = " << *r << endl;
 	cout << "(Methode ausgabe()) ";
 	r->ausgabe();
-	
+	delete(r);
 	
 	return 0;
 }

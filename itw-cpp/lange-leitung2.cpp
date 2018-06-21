@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <iomanip>
-#include <regex>
-#include "physik.cpp"
+#include <regex> // für die Gültigkeitsprüfung der Fließkomma-Zahlen
+#include "physik.cpp" // Klassen für physikalische Größen
 
 using namespace std;
 
@@ -80,6 +80,11 @@ bool istGueltigeZahl(string s) {
 	// 3. entweder nichts, ODER ein Muster wie folgt:
 	//    3a. ein "," oder ein "."
 	//    3b. beliebig viele 0..9
+	// Quantifier in regulären Ausdrücken:
+	// (nichts) genau einmal
+	// ? 0- oder 1-mal
+	// + 1- oder mehrmals
+	// * 0- oder mehrmals
     regex regexp("-?(0|([1-9][0-9]*))([,\\.][0-9]*)?");
     return regex_match(s, regexp);
 }
