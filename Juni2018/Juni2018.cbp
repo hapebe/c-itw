@@ -37,7 +37,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="sfml0.cpp" />
+		<Unit filename="sfml-tsp-model.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="sfml-tsp.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

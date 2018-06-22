@@ -3,6 +3,7 @@
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(300, 300), "SFML works!");
+
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Red);
     shape.move(40,60);
@@ -59,8 +60,12 @@ int main() {
             }
         }
 
-        window.clear();
+        // clear the window with black color:
+        window.clear(sf::Color::Black);
+
         window.draw(shape);
+
+        // internally swaps the front and back buffers:
         window.display();
     }
 

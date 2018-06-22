@@ -1,5 +1,15 @@
 # depslib dependency file v1.0
-1528894509 source:/media/user/PC-09-shared/it5source/Juni2018/sfml0.cpp
+1529651231 source:/media/user/PC-09-shared/it5source/Juni2018/sfml0.cpp
 	<iostream>
 	<SFML/Graphics.hpp>
+
+1529670912 source:/media/user/PC-09-shared/it5source/Juni2018/sfml-tsp.cpp
+	<iostream>
+	<SFML/Graphics.hpp>
+	"sfml-tsp-model.cpp"
+
+1529671077 /media/user/PC-09-shared/it5source/Juni2018/sfml-tsp-model.cpp
+	<vector>
+	<cstdlib>
+	<cmath>
 

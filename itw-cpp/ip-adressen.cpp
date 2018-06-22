@@ -18,6 +18,7 @@ class IPAdresse {
 			// this->value = (255 << 24) | (255 << 16) | (255 << 8) | 255;
 		}
 		string getDottedQuad(void);
+		string getDottedBinary(void);
 		bool setDottedQuad(string);
 		unsigned int getUInt() { return this->value; }
 		void setUInt(unsigned int value) { this->value = value; }
@@ -28,7 +29,9 @@ class IPAdresse {
 class NetMask : public IPAdresse {
 	public:
 		bool istGueltig(void);
+		bool istGueltigAlternativ(void);
 		int getCIDRKlasse(void);
+		void setCIDRKlasse(int);
 };
 
 bool istGueltigerInt(string s) {
@@ -107,6 +110,31 @@ string IPAdresse::getDottedQuad() {
 	return ss.str();
 }
 
+string IPAdresse::getDottedBinary() {
+	stringstream ss;
+	
+	// Startpunkt: Bit #31 (das höchstwertige in einer IP-Adresse)
+	int aktuellesBit = 31;
+	
+	while (aktuellesBit > 0) {
+		// ist das aktuelle Bit gesetzt?
+		if (this->value & (unsigned int)pow(2,aktuellesBit)) {
+			ss << "1";
+		} else {
+			ss << "0";
+		}
+		
+		// nach 8 Bits jeweils einen Punkt einfügen:
+		if (aktuellesBit == 24) ss << ".";
+		if (aktuellesBit == 16) ss << ".";
+		if (aktuellesBit == 8) ss << ".";
+		
+		aktuellesBit--; // nächstkleineres Bit
+	}
+	
+	return ss.str();
+}
+
 IPAdresse IPAdresse::getNetzAdresse(NetMask m) {
 	IPAdresse retval;
 	retval.setUInt(this->value & m.getUInt());
@@ -121,7 +149,7 @@ bool NetMask::istGueltig(void) {
 int NetMask::getCIDRKlasse(void) {
 	unsigned int alleBits = (255 << 24) + (255 << 16) + (255 << 8) + 255;
 	
-	for (int i=0; i<33; i++) {
+	for (int i=0; i<=32; i++) {
 		unsigned int hostmask = (1 << i) - 1;
 		unsigned int netmask = alleBits - hostmask;
 		
@@ -136,6 +164,39 @@ int NetMask::getCIDRKlasse(void) {
 	
 	return -1;
 }
+
+bool NetMask::istGueltigAlternativ() {
+	long temp = this->value; // value ist die IP-Adresse als 32-bit-unsigned int
+	unsigned int check = pow(2,31);
+	
+	while (check > 0) {
+		temp -= check;
+		
+		if (temp == 0) return true; // wenn alle folgenden Bits 0 sind: gültig!
+		
+		// der folgende Fall tritt auch ein, wenn GAR KEIN Bit gesetzt war:
+
+		// das aktuelle Bit ist nicht gesetzt, aber irgendwo "weiter hinten" 
+		// gibt es noch gesetzte Bits:
+		if (temp < 0) return false; 
+		
+		check /= 2; // nächstkleineres Bit
+	}
+	
+	return true;
+}
+
+void NetMask::setCIDRKlasse(int l) {
+	unsigned int mask = (255 << 24) + (255 << 16) + (255 << 8) + 255;
+	
+	int shift = 32-l;
+	for (int i=shift-1; i>=0; i--) {
+		mask -= (1 << i);
+	}
+	
+	this->value = mask;
+}
+
 
 /**
  * überladener == Operator für IPAdresse ...
@@ -162,20 +223,37 @@ int main() {
 	NetMask subnetz;
 	subnetz.setDottedQuad("255.255.128.0");
 	cout << "Subnetz-Adresse: " << subnetz.getDottedQuad() << endl;
+	cout << "Subnetz (binär): " << subnetz.getDottedBinary() << endl;
 	cout << "Adresse mit CIDR-Klasse: " << adresse.getDottedQuad() << "/" << subnetz.getCIDRKlasse() << endl;
 	
-	IPAdresse gateway;
-	gateway.setDottedQuad("192.168.40.252");
-	cout << "Gateway: " << gateway.getDottedQuad() << endl;
+	IPAdresse gw;
+	gw.setDottedQuad("192.168.40.252");
+	cout << "Gateway: " << gw.getDottedQuad() << endl;
 	
 	cout << "Netz des Hosts: " << adresse.getNetzAdresse(subnetz).getDottedQuad() << endl;
-	cout << "Netz des Gateways: " << gateway.getNetzAdresse(subnetz).getDottedQuad() << endl;
-	if (adresse.getNetzAdresse(subnetz) == gateway.getNetzAdresse(subnetz)) {
+	cout << "Netz des Gateways: " << gw.getNetzAdresse(subnetz).getDottedQuad() << endl;
+	if (adresse.getNetzAdresse(subnetz) == gw.getNetzAdresse(subnetz)) {
 		cout << "Der Gateway liegt im gleichen Netzwerk wie der Hosts." << endl;
 	} else {
 		cout << "Problem: Der Gateway liegt nicht im gleichen Netzwerk wie der Hosts." << endl;
 	}
 	
+	for(int i=0; i<=32; i++) {
+		subnetz.setCIDRKlasse(i);
+		cout << "Netzmaske der CIDR-Klasse " << i << ": " << subnetz.getDottedQuad() << endl;
+		cout << "    (binär: " << subnetz.getDottedBinary() << ")" << endl;
+	}
+	
+	while (true) {
+		cout << "Bitte geben Sie eine Netzmaske ein: ";
+		string st;
+		cin >> st;
+		subnetz.setDottedQuad(st);
+		cout << "entspricht binär: " << subnetz.getDottedBinary() << endl;
+		cout << boolalpha << "istGueltigAlternativ sagt: " << subnetz.istGueltigAlternativ() << endl;
+	}
+	
+	exit(0);
 #endif
 	
 	cout << "Dieses Programm erfragt und prüft die Konfiguration einer IPv4-Netzwerkschnittstelle mit Gateway." << endl;
