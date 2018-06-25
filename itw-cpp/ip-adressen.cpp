@@ -24,6 +24,8 @@ class IPAdresse {
 		void setUInt(unsigned int value) { this->value = value; }
 		static bool istGueltigeDottedQuad(string);
 		IPAdresse getNetzAdresse(NetMask m);
+		IPAdresse getBroadCast(NetMask m);
+		IPAdresse getHostAdresse(NetMask m);
 };
 
 class NetMask : public IPAdresse {
@@ -32,6 +34,7 @@ class NetMask : public IPAdresse {
 		bool istGueltigAlternativ(void);
 		int getCIDRKlasse(void);
 		void setCIDRKlasse(int);
+		unsigned int getNetzGroesse(void);
 };
 
 bool istGueltigerInt(string s) {
@@ -116,7 +119,7 @@ string IPAdresse::getDottedBinary() {
 	// Startpunkt: Bit #31 (das höchstwertige in einer IP-Adresse)
 	int aktuellesBit = 31;
 	
-	while (aktuellesBit > 0) {
+	while (aktuellesBit >= 0) {
 		// ist das aktuelle Bit gesetzt?
 		if (this->value & (unsigned int)pow(2,aktuellesBit)) {
 			ss << "1";
@@ -138,6 +141,20 @@ string IPAdresse::getDottedBinary() {
 IPAdresse IPAdresse::getNetzAdresse(NetMask m) {
 	IPAdresse retval;
 	retval.setUInt(this->value & m.getUInt());
+	return retval;
+}
+
+IPAdresse IPAdresse::getHostAdresse(NetMask m) {
+	IPAdresse retval;
+	// die Adresse verknüpft mit der INVERTIERTEN Netz-Maske:
+	retval.setUInt(this->value & (~ m.getUInt()));
+	return retval;
+}
+
+IPAdresse IPAdresse::getBroadCast(NetMask m) {
+	unsigned int basis = this->getNetzAdresse(m).getUInt();
+	IPAdresse retval;
+	retval.setUInt(basis + m.getNetzGroesse() - 1); // die letzte IP-Adresse vor dem nächsten Sub-Netz...
 	return retval;
 }
 
@@ -182,7 +199,6 @@ bool NetMask::istGueltigAlternativ() {
 		
 		check /= 2; // nächstkleineres Bit
 	}
-	
 	return true;
 }
 
@@ -197,6 +213,11 @@ void NetMask::setCIDRKlasse(int l) {
 	this->value = mask;
 }
 
+unsigned int NetMask::getNetzGroesse(void) {
+	return (~ this->value)+1; // der binäre Kehrwehrt der Netzmaske!
+}
+
+
 
 /**
  * überladener == Operator für IPAdresse ...
@@ -209,71 +230,64 @@ bool operator==(IPAdresse lhs, IPAdresse rhs) {
 
 int main() {
 #ifdef DEBUG
-	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.255") << endl;
-	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.256") << endl;
-	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.") << endl;
-	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.-1.0.1") << endl;
-	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("a.b.c.d") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.255") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.256") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.-1.0.1") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("a.b.c.d") << endl;
 	
 	IPAdresse adresse;
-	cout << adresse.getDottedQuad() << endl;
+	// cout << adresse.getDottedQuad() << endl;
 	adresse.setDottedQuad("192.168.20.57");
 	cout << "Adresse: " << adresse.getDottedQuad() << endl;
 	
-	NetMask subnetz;
-	subnetz.setDottedQuad("255.255.128.0");
-	cout << "Subnetz-Adresse: " << subnetz.getDottedQuad() << endl;
-	cout << "Subnetz (binär): " << subnetz.getDottedBinary() << endl;
-	cout << "Adresse mit CIDR-Klasse: " << adresse.getDottedQuad() << "/" << subnetz.getCIDRKlasse() << endl;
+	NetMask maske;
+	maske.setDottedQuad("255.255.255.240");
+	cout << "Subnetz-Adresse: " << maske.getDottedQuad() << endl;
+	cout << "Subnetz (binär): " << maske.getDottedBinary() << endl;
+	cout << "Netzgröße: " << maske.getNetzGroesse() << endl;
+	cout << "Adresse mit CIDR-Klasse: " << maske.getDottedQuad() << "/" << maske.getCIDRKlasse() << endl;
+	cout << "Netz-Adresse: " << adresse.getNetzAdresse(maske).getDottedQuad() << endl;
+	cout << "Broadcast-Adresse: " << adresse.getBroadCast(maske).getDottedQuad() << endl;
 	
 	IPAdresse gw;
 	gw.setDottedQuad("192.168.40.252");
 	cout << "Gateway: " << gw.getDottedQuad() << endl;
 	
-	cout << "Netz des Hosts: " << adresse.getNetzAdresse(subnetz).getDottedQuad() << endl;
-	cout << "Netz des Gateways: " << gw.getNetzAdresse(subnetz).getDottedQuad() << endl;
-	if (adresse.getNetzAdresse(subnetz) == gw.getNetzAdresse(subnetz)) {
+	cout << "Netz des Hosts: " << adresse.getNetzAdresse(maske).getDottedQuad() << endl;
+	cout << "Netz des Gateways: " << gw.getNetzAdresse(maske).getDottedQuad() << endl;
+	if (adresse.getNetzAdresse(maske) == gw.getNetzAdresse(maske)) {
 		cout << "Der Gateway liegt im gleichen Netzwerk wie der Hosts." << endl;
 	} else {
 		cout << "Problem: Der Gateway liegt nicht im gleichen Netzwerk wie der Hosts." << endl;
 	}
 	
-	for(int i=0; i<=32; i++) {
-		subnetz.setCIDRKlasse(i);
-		cout << "Netzmaske der CIDR-Klasse " << i << ": " << subnetz.getDottedQuad() << endl;
-		cout << "    (binär: " << subnetz.getDottedBinary() << ")" << endl;
-	}
-	
-	while (true) {
-		cout << "Bitte geben Sie eine Netzmaske ein: ";
-		string st;
-		cin >> st;
-		subnetz.setDottedQuad(st);
-		cout << "entspricht binär: " << subnetz.getDottedBinary() << endl;
-		cout << boolalpha << "istGueltigAlternativ sagt: " << subnetz.istGueltigAlternativ() << endl;
-	}
+//	for(int i=0; i<=32; i++) {
+//		maske.setCIDRKlasse(i);
+//		cout << "Netzmaske der CIDR-Klasse " << i << ": " << maske.getDottedQuad() << endl;
+//		cout << "    (binär: " << maske.getDottedBinary() << ")" << endl;
+//	}
+//	
+//	while (true) {
+//		cout << "Bitte geben Sie eine Netzmaske ein: ";
+//		string st;
+//		cin >> st;
+//		maske.setDottedQuad(st);
+//		cout << "entspricht binär: " << maske.getDottedBinary() << endl;
+//		cout << boolalpha << "istGueltigAlternativ sagt: " << maske.istGueltigAlternativ() << endl;
+//	}
 	
 	exit(0);
 #endif
 	
+	IPAdresse allesEins;
+	allesEins.setDottedQuad("255.255.255.255");
+	
 	cout << "Dieses Programm erfragt und prüft die Konfiguration einer IPv4-Netzwerkschnittstelle mit Gateway." << endl;
 	cout << endl;
 	
-	cout << "Bitte geben Sie die Host-Adresse ein: ";
-	string s;
-	IPAdresse host;
-	do {
-		cin >> s;
-		if (!IPAdresse::istGueltigeDottedQuad(s)) {
-			cout << "\"" << s << "\" ist keine gültige IP-Adresse. Bitte Eingabe wiederholen: ";
-			continue;
-		} 
-		// Eingabe okay, weitermachen:
-		break;
-	} while(true);
-	host.setDottedQuad(s);
-
 	cout << "Bitte geben Sie die Netzmaske (in Dotted-Quad-Notation) ein: ";
+	string s;
 	NetMask mask;
 	do {
 		cin >> s;
@@ -289,43 +303,124 @@ int main() {
 			continue;
 		}
 		
-		if (host.getNetzAdresse(mask) == host) {
-			cout 
-				<< "Problem: Die Host-Adresse wäre so identisch zur Netzwerk-Adresse." 
-				<< endl 
-				<< "Bitte geben Sie eine kürzere Netzmaske ein: ";
-			continue;
-		}
-		
 		break;
 	} while(true);
 	
 	
-	cout << "Bitte geben Sie die Gateway-Adresse ein: ";
-	IPAdresse gateway;
+	
+	cout << "Bitte geben Sie die Host-Adresse ein: ";
+	IPAdresse host;
 	do {
 		cin >> s;
 		if (!IPAdresse::istGueltigeDottedQuad(s)) {
 			cout << "\"" << s << "\" ist keine gültige IP-Adresse. Bitte Eingabe wiederholen: ";
 			continue;
+		} 
+
+		// okay, s ist formal ein gültige IP-Adresse:
+		host.setDottedQuad(s);
+		
+		if (host.getNetzAdresse(mask) == host) {
+			if (mask.getCIDRKlasse() < 31) {
+				cout << "Problem: Die Host-Adresse ist identisch zur Netzwerk-Adresse." << endl;
+				cout << "Bitte geben Sie eine andere Host-Adresse an: ";
+				continue;
+			} else if (mask.getCIDRKlasse() == 31) {
+				// 31 hat zwei Adressen - Netz- und Broadcast. Es gibt keine Host-Adressen.
+				cout 
+					<< "Die Host-Adresse entspricht der Netzwerk-Adresse, das ist "
+					<< "bei der CIDR-Netzklasse 31 aber vielleicht akzeptabel." << endl;
+			} else if (mask.getCIDRKlasse() == 32) {
+				// 32 hat nur eine Adresse - hier sind also sogar Netz- und Broadcast-Adresse identisch. Es gibt keine Host-Adressen!
+				cout 
+					<< "Die Host-Adresse entspricht der Netzwerk- und Broadcast-Adresse, "
+					<< "das ist bei der CIDR-Netzklasse 32 aber unvermeidlich." << endl;
+			}
 		}
 		
-		// okay, s ist formal ein gültige IP-Adresse:
-		gateway.setDottedQuad(s);
-		if (host.getNetzAdresse(mask) == gateway.getNetzAdresse(mask)) {
+		if (host.getHostAdresse(mask) == allesEins.getHostAdresse(mask)) {
+			if (mask.getCIDRKlasse() < 31) {
+				cout << "Problem: Die Host-Adresse ist identisch zur Broadcast-Adresse." << endl;
+				cout << "Bitte geben Sie eine andere Host-Adresse an: ";
+				continue;
+			} else if (mask.getCIDRKlasse() == 31) {
+				cout 
+					<< "Die Host-Adresse entspricht der Broadcast-Adresse, das ist "
+					<< "bei der CIDR-Netzklasse 31 aber vielleicht akzeptabel." << endl;
+			} else if (mask.getCIDRKlasse() == 32) {
+				// Meldung hatten wir dann schon oben...
+			}
+		}
+		
+		// Eingabe okay, weitermachen:
+		break;
+	} while(true);
+
+	
+	
+	IPAdresse gateway;
+	if (mask.getCIDRKlasse() == 32) {
+		// Bei Klasse 32 muss das Gateway gleich dem Host sein:
+		gateway.setUInt(host.getUInt());
+	} else {
+		cout << "Bitte geben Sie die Gateway-Adresse ein: ";
+		do {
+			cin >> s;
+			if (!IPAdresse::istGueltigeDottedQuad(s)) {
+				cout << "\"" << s << "\" ist keine gültige IP-Adresse. Bitte Eingabe wiederholen: ";
+				continue;
+			}
+			
+			// okay, s ist formal ein gültige IP-Adresse:
+			gateway.setDottedQuad(s);
+			
+			if (!(host.getNetzAdresse(mask) == gateway.getNetzAdresse(mask))) {
+				cout 
+					<< "Problem: Der Gateway liegt nicht im gleichen Netzwerk wie der Hosts." 
+					<< endl 
+					<< "Bitte Eingabe wiederholen: ";
+				continue;
+			}
+			
+			if (host == gateway) {
+				cout 
+					<< "Problem: Host- und Gateway-Adresse sind identisch." << endl 
+					<< "Bitte Eingabe wiederholen: ";
+				continue;
+			}
+			
+			if (gateway.getNetzAdresse(mask) == gateway) {
+				if (mask.getCIDRKlasse() < 31) {
+					cout << "Problem: Die Gateway-Adresse ist identisch zur Netzwerk-Adresse." << endl;
+					cout << "Bitte geben Sie eine andere Gateway-Adresse an: ";
+					continue;
+				} else if (mask.getCIDRKlasse() == 31) {
+					// 31 hat zwei Adressen - Netz- und Broadcast. Es gibt keine Host-Adressen.
+					cout 
+						<< "Die Gateway-Adresse entspricht der Netzwerk-Adresse, das ist "
+						<< "bei der CIDR-Netzklasse 31 aber vielleicht akzeptabel." << endl;
+				}
+			}
+			
+			if (gateway.getHostAdresse(mask) == allesEins.getHostAdresse(mask)) {
+				if (mask.getCIDRKlasse() < 31) {
+					cout << "Problem: Die Gateway-Adresse ist identisch zur Broadcast-Adresse." << endl;
+					cout << "Bitte geben Sie eine andere Gateway-Adresse an: ";
+					continue;
+				} else if (mask.getCIDRKlasse() == 31) {
+					cout 
+						<< "Die Gateway-Adresse entspricht der Broadcast-Adresse, das ist "
+						<< "bei der CIDR-Netzklasse 31 aber vielleicht akzeptabel." << endl;
+				}
+			}
+			
 			// Eingabe okay, weitermachen:
 			break;
-		} else {
-			cout 
-				<< "Problem: Der Gateway liegt nicht im gleichen Netzwerk wie der Hosts." 
-				<< endl 
-				<< "Bitte Eingabe wiederholen: ";
-			continue;
-		}
-	} while(true);
+		} while(true);
+	}
 	
 	cout << endl << "Danke! Ihre gewünschte Netzwerk-Konfiguration:" << endl;
-	cout << "Adresse: " << host.getDottedQuad() << "/" << mask.getCIDRKlasse() << endl;
+	cout << "Adresse: " << host.getDottedQuad() << "/" << (unsigned int)mask.getCIDRKlasse() << endl;
 	cout << "Gateway: " << gateway.getDottedQuad() << endl;
 	
     return 0;

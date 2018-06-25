@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root text="&#34;Methode eingabeSub&#34;" comment="&#34;&#34;" color="ffffff" type="program" style="nice">
+	<children>
+		<instruction text="&#34;Variable subAdr: Array von 4 Ganzzahlen, Element der gleichen Klasse wie die Methode.&#34;,&#34;Variablen ipAdresse, subnetAdresse: vorzeichenlose Ganzzahl, Element der gleichen Klasse wie die Methode.&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<instruction text="&#34;i &#60;- 0&#34;,&#34;subnet &#60;- 0&#34;,&#34;fehler &#60;- 0 (entspricht: lösche Fehler-Status)&#34;,&#34;potenz &#60;- 0&#34;,&#34;temp &#60;- 0&#34;,&#34;subAdr[0..3] &#60;- 0&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<instruction text="&#34;Ausgabe: &#34;&#34;Subnetzmaske: ___.___.___.___&#34;&#34;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+		<forever text="" comment="&#34;&#34;" color="ffffff">
+			<qForever>
+				<instruction text="&#34;lösche Fehler-Status&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+				<instruction text="&#34;subAdr[i] &#60;- Eingabe eines Bytes als Dezimalzahl an Bildschirmposition basierend auf i&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+				<alternative text="&#34;(subnet = 1) UND (subAdr[i] &#62; 0)?&#34;" comment="&#34;War die Maske bereits zu Ende, und hat das aktuelle Byte einen Wert größer als 0 ?&#34;" color="ffffff">
+					<qTrue>
+						<instruction text="&#34;setze Fehler-Status&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+					</qTrue>
+					<qFalse>
+					</qFalse>
+				</alternative>
+				<alternative text="&#34;Enthält subAdr[i] einen Wert zwischen 0 und 255?&#34;" comment="&#34;&#34;" color="ffffff">
+					<qTrue>
+						<instruction text="&#34;temp &#60;- subAdr[i]&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+						<instruction text="&#34;potenz &#60;- 128&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+						<for text="&#34;Solange potenz &#62;= 1&#34;" comment="&#34;&#34;" color="ffffff">
+							<qFor>
+								<alternative text="&#34;temp &#62; 0 ?&#34;" comment="&#34;&#34;" color="ffffff">
+									<qTrue>
+										<instruction text="&#34;temp &#60;- temp - potenz&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+										<alternative text="&#34;(temp &#60; potenz/2) UND (temp != 0) ?&#34;" comment="&#34;&#34;" color="ffffff">
+											<qTrue>
+												<instruction text="&#34;setze Fehler-Status&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+											</qTrue>
+											<qFalse>
+											</qFalse>
+										</alternative>
+									</qTrue>
+									<qFalse>
+									</qFalse>
+								</alternative>
+								<instruction text="&#34;potenz &#60;- potenz / 2&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+							</qFor>
+						</for>
+					</qTrue>
+					<qFalse>
+						<instruction text="&#34;setze Fehler-Status&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+					</qFalse>
+				</alternative>
+				<alternative text="&#34;Ist Fehler-Status gesetzt?&#34;" comment="&#34;&#34;" color="ffffff">
+					<qTrue>
+						<instruction text="&#34;Zahleneingabe verwerfen / überschreiben&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+					</qTrue>
+					<qFalse>
+						<alternative text="&#34;subAdr[i] &#60; 255 ?&#34;" comment="&#34;&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;subnet &#60;- 1&#34;" comment="&#34;Markieren, dass die Subnetz-Maske bereits hier zu &#34;,&#34;Ende war - die folgenden Bytes dürfen nur noch 0 sein.&#34;" color="ffffff" rotated="0"></instruction>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+						<instruction text="&#34;i &#60;- i + 1&#34;" comment="&#34;entspricht: Nächstes Byte bearbeiten&#34;" color="ffffff" rotated="0"></instruction>
+					</qFalse>
+				</alternative>
+				<alternative text="&#34;i == 4 ?&#34;" comment="&#34;entspricht: Wurden bereits alles 4 Bytes eingegeben?&#34;" color="ffffff">
+					<qTrue>
+						<instruction text="&#34;subnetAdresse &#60;- subAdr[0]*16777216 + subAdr[1]*65536 + subAdr[2]*256 + subAdr[3];&#34;" comment="&#34;subnetAdresse als 32-Bit-Ganzzahl aus den 4 Bytes &#34;,&#34;subAdr[0..3] zusammensetzen.&#34;" color="ffffff" rotated="0"></instruction>
+						<alternative text="&#34;Entspricht die Bit-weise UND-Verknüpfung von ipAdresse &#34;,&#34;und subnetAdresse dem Wert von ipAdresse ?&#34;" comment="&#34;&#34;" color="ffffff">
+							<qTrue>
+								<instruction text="&#34;Ausgabe &#34;&#34;NetzID&#34;&#34;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+								<instruction text="&#34;Eingabe (auf Tastendruck warten)&#34;" comment="&#34;&#34;" color="ffffff" rotated="0"></instruction>
+								<jump text="&#34;Wert 1 zurückgeben, Methode verlassen&#34;" comment="&#34;&#34;" color="ffffff"></jump>
+							</qTrue>
+							<qFalse>
+							</qFalse>
+						</alternative>
+					</qTrue>
+					<qFalse>
+					</qFalse>
+				</alternative>
+			</qForever>
+		</forever>
+	</children>
+</root>

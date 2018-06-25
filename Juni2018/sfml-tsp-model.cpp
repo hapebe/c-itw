@@ -1,10 +1,32 @@
-#define TSP_N 200 // Number of desired points in the TSP model
+#define TSP_N 20 // Number of desired points in the TSP model
 #include <sstream>
 #include <vector>
 #include <cstdlib> // for rand() and srand()
 #include <cmath> // for sqrt()
 
 using namespace std;
+
+class TSPPoint;
+class TSPRoutingTable;
+class TSPRoute;
+
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+// GLOBAL VARIABLES:                                                       //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+
+vector<TSPPoint> points(TSP_N);
+TSPRoutingTable * routingTable;
+TSPRoute * currentRoute;
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+// CLASSES AND METHODS:                                                    //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
 
 class TSPPoint {
     protected:
@@ -60,14 +82,58 @@ class TSPRoutingTable {
         }
 };
 
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-// GLOBAL VARIABLES:                                                       //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
+class TSPRoute {
+    protected:
+        double length;
+        vector<int> seq;
+    public:
+        TSPRoute() { this->length = -1; }
+        void addStep(int idx) { seq.push_back(idx); }
+        int getStep(int idx) { return seq[idx]; }
+        bool isComplete(void);
+        int getSize(void) { return seq.size(); }
+        double getLength(void);
+};
 
-vector<TSPPoint> points(TSP_N);
-TSPRoutingTable * routingTable;
+bool TSPRoute::isComplete() {
+    static bool found[TSP_N];
+    for (int i=0; i<TSP_N; i++) found[i] = false;
+    for (int i=0; i<seq.size(); i++) {
+        found[seq[i]] = true;
+    }
+    for (int i=0; i<TSP_N; i++) {
+        if (!found[i]) return false;
+    }
+    return true;
+}
+
+double TSPRoute::getLength() {
+    if (length >= 0) return length;
+
+    // okay, we have to calculate:
+    for (int i=0; i<seq.size(); i++) {
+        int from = seq[i];
+        int to = -1;
+        if (i<seq.size()-1) {
+            to = seq[i+1]; // either the next point,
+        } else {
+            to = seq[0]; // or back to the first one.
+        }
+
+        length += points[from].getDistanceTo(points[to]);
+    }
+
+    return length;
+}
+
+class TSPRouter {
+    public:
+        static TSPRoute * naiveOrdered(void) {
+            TSPRoute * r = new TSPRoute();
+            for (int i=0; i<TSP_N; i++) r->addStep(i);
+            return r;
+        }
+};
 
 
 

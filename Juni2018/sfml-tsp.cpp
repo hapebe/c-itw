@@ -45,17 +45,47 @@ double screen2coordY(int y) {
 }
 
 
+class TSPPainter {
+    public:
+        static void paintRoute(sf::RenderWindow * window, TSPRoute * r) {
+            for (int i=0; i<r->getSize(); i++) {
+                int from = r->getStep(i);
+                int to = -1;
+                if (i < r->getSize() - 1) {
+                    to = r->getStep(i+1);
+                } else {
+                    to = r->getStep(0);
+                }
+
+                int x0 = coord2screenX(points[from].getX());
+                int y0 = coord2screenY(points[from].getY());
+                int x1 = coord2screenX(points[to].getX());
+                int y1 = coord2screenY(points[to].getY());
+
+                sf::Vertex line[] = {
+                    sf::Vertex(sf::Vector2f(x0, y0)),
+                    sf::Vertex(sf::Vector2f(x1, y1))
+                };
+
+                window->draw(line, 2, sf::Lines);
+            }
+        }
+};
+
+
 void init(void) {
     // create and set up the application's data model:
     createPoints();
     createRoutingTable();
     cout << routingTable->debug();
+    currentRoute = TSPRouter::naiveOrdered();
+    cout << "Current Route is " << (currentRoute->isComplete()?"complete":"not complete") << "." << endl;
 
 
     vector<TSPPoint>::iterator i;
     int idx=0;
     for(i=points.begin(); i!=points.end(); ++i) {
-        cout << (*i) << endl;
+        // cout << (*i) << endl;
         sf::CircleShape s(5.f);
         s.setFillColor(getRandomColor());
         s.move(-5, -5); // move center to 0;0
@@ -170,6 +200,9 @@ int main() {
         for(i=gfxPoints.begin(); i!=gfxPoints.end(); ++i) {
             window.draw(*i);
         }
+
+        // draw the current route:
+        TSPPainter::paintRoute(&window, currentRoute);
 
         // internally swaps the front and back buffers:
         window.display();
