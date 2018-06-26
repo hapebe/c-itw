@@ -45,6 +45,7 @@ class NetMask : public IPAdresse {
 class NetAnalyzer {
 	public:
 		static void beschreibeNetz(IPAdresse host, NetMask mask);
+		static bool istPrivat(IPAdresse host);
 };
 
 bool istGueltigerInt(string s) {
@@ -267,44 +268,50 @@ void NetAnalyzer::beschreibeNetz(IPAdresse host, NetMask mask) {
 	if ((host.getRFC791Class() == "A") && (mask.getRFC791Class() == "A")) {
 		cout << "Das ist ein Netzwerk der RFC-791-Klasse A.";
 		if (host.getFirstByte() == 0) {
-			cout << " Es handelt sich um das \"Here\"-Netzwerk 0.0.0.0/8." << endl;
+			cout << " Es handelt sich um das \"Here\"-Netzwerk 0.0.0.0/8.";
 		}
 		if (host.getFirstByte() == 10) {
-			cout << " Es handelt sich um das private Netzwerk 10.0.0.0/8." << endl;
+			cout << " Es handelt sich um das private Netzwerk 10.0.0.0/8.";
 		}
 		if (host.getFirstByte() == 127) {
-			cout << " Es handelt sich um das Loopback-Netzwerk 127.0.0.0/8." << endl;
+			cout << " Es handelt sich um das Loopback-Netzwerk 127.0.0.0/8.";
 		}
 	} else if ((host.getRFC791Class() == "B") && (mask.getRFC791Class() == "B")) {
 		cout << "Das ist ein Netzwerk der RFC-791-Klasse B.";
 		if (host.getFirstByte() == 169 && host.getSecondByte() == 254) {
-			cout << " Es handelt sich um das private (APIPA-)Netzwerk 169.254.0.0/16." << endl;
+			cout << " Es handelt sich um das private (APIPA-)Netzwerk 169.254.0.0/16.";
 		}
 		if (host.getFirstByte() == 172 && host.getSecondByte() >= 16 && host.getSecondByte() <= 31) {
-			cout << " Es handelt sich um ein privates Netzwerk aus dem Bereich 172.16.0.0/12." << endl;
+			cout << " Es handelt sich um ein privates Netzwerk aus dem Bereich 172.16.0.0/12.";
 		}
 	} else if ((host.getRFC791Class() == "C") && (mask.getRFC791Class() == "C")) {
 		cout << "Das ist ein Netzwerk der RFC-791-Klasse C.";
 		if (host.getFirstByte() == 192 && host.getSecondByte() == 168) {
-			cout << " Es handelt sich um ein privates Netzwerk aus dem Bereich 192.168.0.0/16." << endl;
+			cout << " Es handelt sich um ein privates Netzwerk aus dem Bereich 192.168.0.0/16.";
 		}
 	} else if (host.getRFC791Class() == "D") {
 		cout << "Das ist ein Netzwerk der RFC-791-Klasse D (die Subnetz-Maske für diese Klasse ist nicht definiert).";
 	} else if (host.getRFC791Class() == "E") {
 		cout << "Das ist ein Netzwerk der RFC-791-Klasse E (die Subnetz-Maske für diese Klasse ist nicht definiert).";
 	} else if (host.getUInt() == 0 && mask.getCIDRKlasse() == 32) {
-		cout << "Es handelt sich um die Meta-Adresse 0.0.0.0/32." << endl;
+		cout << "Es handelt sich um die Meta-Adresse 0.0.0.0/32.";
 	} else if (host.getUInt() == 0xffffffff && mask.getCIDRKlasse() == 32) {
-		cout << "Es handelt sich um die \"Limited Broadcast\"-Adresse 255.255.255.255/32." << endl;
+		cout << "Es handelt sich um die \"Limited Broadcast\"-Adresse 255.255.255.255/32.";
 	} else {
 		cout << "Das Netzwerk entspricht keiner Klasse nach RFC 791.";
 	}
+	cout << " Die Host-Adresse ist " << (NetAnalyzer::istPrivat(host)?"privat":"öffentlich") << ".";
 	cout << endl;
 }
 
-
-
-
+bool NetAnalyzer::istPrivat(IPAdresse host) {
+	unsigned int a = host.getUInt();
+	if (a >= 0x0a000000 && a <= 0x0affffff) return true; // 10.0.0.0/8
+	if (a >= 0xa9fe0000 && a <= 0xa9feffff) return true; // 169.254.0.0/16
+	if (a >= 0xac100000 && a <= 0xac1fffff) return true; // 172.16.0.0/12
+	if (a >= 0xc0a80000 && a <= 0xc0a8ffff) return true; // 192.168.0.0/16
+	return false;
+}
 
 /**
  * überladener == Operator für IPAdresse ...
@@ -315,70 +322,17 @@ bool operator==(IPAdresse lhs, IPAdresse rhs) {
 }
 
 
-int main() {
-#ifdef DEBUG
-//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.255") << endl;
-//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.256") << endl;
-//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.") << endl;
-//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.-1.0.1") << endl;
-//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("a.b.c.d") << endl;
+IPAdresse allesEins;
+IPAdresse host;
+NetMask mask;
+IPAdresse gateway;
 
-	IPAdresse adresse;
-	// cout << adresse.getDottedQuad() << endl;
-	adresse.setDottedQuad("192.168.20.57");
-	cout << "Adresse: " << adresse.getDottedQuad() << endl;
-
-	NetMask maske;
-	maske.setDottedQuad("255.255.255.240");
-	cout << "Subnetz-Adresse: " << maske.getDottedQuad() << endl;
-	cout << "Subnetz (binär): " << maske.getDottedBinary() << endl;
-	cout << "Netzgröße: " << maske.getNetzGroesse() << endl;
-	cout << "Adresse mit CIDR-Klasse: " << maske.getDottedQuad() << "/" << maske.getCIDRKlasse() << endl;
-	cout << "Netz-Adresse: " << adresse.getNetzAdresse(maske).getDottedQuad() << endl;
-	cout << "Broadcast-Adresse: " << adresse.getBroadCast(maske).getDottedQuad() << endl;
-
-	IPAdresse gw;
-	gw.setDottedQuad("192.168.40.252");
-	cout << "Gateway: " << gw.getDottedQuad() << endl;
-
-	cout << "Netz des Hosts: " << adresse.getNetzAdresse(maske).getDottedQuad() << endl;
-	cout << "Netz des Gateways: " << gw.getNetzAdresse(maske).getDottedQuad() << endl;
-	if (adresse.getNetzAdresse(maske) == gw.getNetzAdresse(maske)) {
-		cout << "Der Gateway liegt im gleichen Netzwerk wie der Hosts." << endl;
-	} else {
-		cout << "Problem: Der Gateway liegt nicht im gleichen Netzwerk wie der Hosts." << endl;
-	}
-
-//	for(int i=0; i<=32; i++) {
-//		maske.setCIDRKlasse(i);
-//		cout << "Netzmaske der CIDR-Klasse " << i << ": " << maske.getDottedQuad() << endl;
-//		cout << "    (binär: " << maske.getDottedBinary() << ")" << endl;
-//	}
-//
-//	while (true) {
-//		cout << "Bitte geben Sie eine Netzmaske ein: ";
-//		string st;
-//		cin >> st;
-//		maske.setDottedQuad(st);
-//		cout << "entspricht binär: " << maske.getDottedBinary() << endl;
-//		cout << boolalpha << "istGueltigAlternativ sagt: " << maske.istGueltigAlternativ() << endl;
-//	}
-
-	exit(0);
-#endif
-
-	IPAdresse allesEins;
-	allesEins.setDottedQuad("255.255.255.255");
-
+void eingabe(void) {
 	if (isTTY()) {
-		cout << "Dieses Programm erfragt und prüft die Konfiguration einer IPv4-Netzwerkschnittstelle mit Gateway." << endl;
-		cout << endl;
-
 		cout << "Bitte geben Sie die Netzmaske (in Dotted-Quad-Notation) ein: ";
 	}
 
 	string s;
-	NetMask mask;
 	do {
 		cin >> s;
 		if (!IPAdresse::istGueltigeDottedQuad(s)) {
@@ -409,7 +363,6 @@ int main() {
 
 
 	if (isTTY()) cout << "Bitte geben Sie die Host-Adresse ein: ";
-	IPAdresse host;
 	do {
 		cin >> s;
 		if (!IPAdresse::istGueltigeDottedQuad(s)) {
@@ -468,10 +421,8 @@ int main() {
 		// Eingabe okay, weitermachen:
 		break;
 	} while(true);
-
-
-
-	IPAdresse gateway;
+	
+	
 	if (mask.getCIDRKlasse() == 32) {
 		// Bei Klasse 32 muss das Gateway gleich dem Host sein:
 		gateway.setUInt(host.getUInt());
@@ -548,6 +499,78 @@ int main() {
 			// Eingabe okay, weitermachen:
 			break;
 		} while(true);
+	}
+}
+
+int main() {
+	allesEins.setDottedQuad("255.255.255.255");
+
+#ifdef DEBUG
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.255") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.256") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.168.0.") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("192.-1.0.1") << endl;
+//	cout << boolalpha << IPAdresse::istGueltigeDottedQuad("a.b.c.d") << endl;
+
+	IPAdresse adresse;
+	// cout << adresse.getDottedQuad() << endl;
+	adresse.setDottedQuad("192.168.20.57");
+	cout << "Adresse: " << adresse.getDottedQuad() << endl;
+
+	NetMask maske;
+	maske.setDottedQuad("255.255.255.240");
+	cout << "Subnetz-Adresse: " << maske.getDottedQuad() << endl;
+	cout << "Subnetz (binär): " << maske.getDottedBinary() << endl;
+	cout << "Netzgröße: " << maske.getNetzGroesse() << endl;
+	cout << "Adresse mit CIDR-Klasse: " << maske.getDottedQuad() << "/" << maske.getCIDRKlasse() << endl;
+	cout << "Netz-Adresse: " << adresse.getNetzAdresse(maske).getDottedQuad() << endl;
+	cout << "Broadcast-Adresse: " << adresse.getBroadCast(maske).getDottedQuad() << endl;
+
+	IPAdresse gw;
+	gw.setDottedQuad("192.168.40.252");
+	cout << "Gateway: " << gw.getDottedQuad() << endl;
+
+	cout << "Netz des Hosts: " << adresse.getNetzAdresse(maske).getDottedQuad() << endl;
+	cout << "Netz des Gateways: " << gw.getNetzAdresse(maske).getDottedQuad() << endl;
+	if (adresse.getNetzAdresse(maske) == gw.getNetzAdresse(maske)) {
+		cout << "Der Gateway liegt im gleichen Netzwerk wie der Hosts." << endl;
+	} else {
+		cout << "Problem: Der Gateway liegt nicht im gleichen Netzwerk wie der Hosts." << endl;
+	}
+
+//	for(int i=0; i<=32; i++) {
+//		maske.setCIDRKlasse(i);
+//		cout << "Netzmaske der CIDR-Klasse " << i << ": " << maske.getDottedQuad() << endl;
+//		cout << "    (binär: " << maske.getDottedBinary() << ")" << endl;
+//	}
+//
+//	while (true) {
+//		cout << "Bitte geben Sie eine Netzmaske ein: ";
+//		string st;
+//		cin >> st;
+//		maske.setDottedQuad(st);
+//		cout << "entspricht binär: " << maske.getDottedBinary() << endl;
+//		cout << boolalpha << "istGueltigAlternativ sagt: " << maske.istGueltigAlternativ() << endl;
+//	}
+
+	exit(0);
+#endif
+
+	if (isTTY()) {
+		cout << "Dieses Programm erfragt und prüft die Konfiguration einer IPv4-Netzwerkschnittstelle mit Gateway." << endl;
+		cout << endl;
+	}
+	
+	while (true) {
+		// das setzt die globalen Variablen:
+		eingabe();
+		
+		if (host.getFirstByte() == 127 && isTTY()) {
+			cout << "Adressen aus dem Loopback-Netzwerk werden nicht akzeptiert - bitte etwas anderes eingeben!" << endl;
+			continue;
+		}
+		// Eingabe okay:
+		break;
 	}
 
 	if (isTTY()) {

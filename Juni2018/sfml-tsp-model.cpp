@@ -1,9 +1,6 @@
-#define TSP_N 20 // Number of desired points in the TSP model
+#define TSP_N 1000 // Number of desired points in the TSP model
 #include <sstream>
 #include <vector>
-#include <cstdlib> // for rand() and srand()
-#include <cmath> // for sqrt()
-
 using namespace std;
 
 class TSPPoint;
@@ -74,6 +71,7 @@ class TSPRoutingTable {
             if (i<j) return distances[i][j];
             if (i==j) return 0;
             if (i>j) return distances[j][i];
+            return 0;
         }
         string debug(void) {
             stringstream s("");
@@ -131,6 +129,42 @@ class TSPRouter {
         static TSPRoute * naiveOrdered(void) {
             TSPRoute * r = new TSPRoute();
             for (int i=0; i<TSP_N; i++) r->addStep(i);
+            return r;
+        }
+        static TSPRoute * naiveClosest(void) {
+            bool free[TSP_N];
+            for (int i=0; i<TSP_N; i++) free[i] = true;
+
+            TSPRoute * r = new TSPRoute();
+
+            // add the origin:
+            int currentIdx = 0;
+            r->addStep(currentIdx);
+            free[currentIdx] = false;
+
+            // find TSP-N - 1 connections:
+            for (int i=1; i<TSP_N; i++) {
+                // cout << "Searching for the best destination from pt #" << currentIdx << ": " << endl;
+                int closestIdx = -1;
+                double closestDistance = 1e100;
+                for (int j=0; j<TSP_N; j++) {
+                    if (j==currentIdx) continue;
+                    if (!free[j]) continue;
+                    double d = routingTable->getDistance(currentIdx, j);
+                    if (d < closestDistance) {
+                        // cout << "    " << j << " is closer to " << currentIdx << ": " << d << endl;
+                        closestIdx = j;
+                        closestDistance = d;
+                    }
+                }
+                // add the closest point:
+                r->addStep(closestIdx);
+                free[closestIdx] = false;
+
+                // cout << "Travelling to pt #" << closestIdx << "..." << endl;
+                // move forward:
+                currentIdx = closestIdx;
+            }
             return r;
         }
 };

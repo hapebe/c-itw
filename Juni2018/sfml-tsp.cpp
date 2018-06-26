@@ -1,105 +1,28 @@
 #include <iostream>
 #include <sstream>
+#include <cstdlib> // for rand() and srand()
+#include <cmath> // for sqrt()
 #include <SFML/Graphics.hpp>
+#include "sfml-tsp-global.cpp"
 #include "sfml-tsp-model.cpp"
-
-int wWidth = 750;
-int wHeight = 750;
-
-int currentMouseX = -1;
-int currentMouseY = -1;
-
-int highlightedPoint = -1;
-
-vector<sf::CircleShape> gfxPoints(TSP_N);
-
-const sf::Color getRandomColor(void) {
-    int rnd = rand() % 8;
-    switch(rnd) {
-        case 0: return sf::Color::Blue;
-        case 1: return sf::Color::Green;
-        case 2: return sf::Color::Red;
-        case 3: return sf::Color::Magenta;
-        case 4: return sf::Color::White;
-        case 5: return sf::Color::Cyan;
-        case 6: return sf::Color::Yellow;
-        case 7: return sf::Color(127,127,127);
-    }
-    return sf::Color::White;
-}
-
-int coord2screenX(double x) {
-    return x * (wWidth/2) + wWidth/2;
-}
-
-int coord2screenY(double y) {
-    return y * (wHeight/2) + wHeight/2;
-}
-
-double screen2coordX(int x) {
-    return ((double)x - (wWidth/2)) / (wWidth/2);
-}
-
-double screen2coordY(int y) {
-    return ((double)y - (wHeight/2)) / (wHeight/2);
-}
-
-
-class TSPPainter {
-    public:
-        static void paintRoute(sf::RenderWindow * window, TSPRoute * r) {
-            for (int i=0; i<r->getSize(); i++) {
-                int from = r->getStep(i);
-                int to = -1;
-                if (i < r->getSize() - 1) {
-                    to = r->getStep(i+1);
-                } else {
-                    to = r->getStep(0);
-                }
-
-                int x0 = coord2screenX(points[from].getX());
-                int y0 = coord2screenY(points[from].getY());
-                int x1 = coord2screenX(points[to].getX());
-                int y1 = coord2screenY(points[to].getY());
-
-                sf::Vertex line[] = {
-                    sf::Vertex(sf::Vector2f(x0, y0)),
-                    sf::Vertex(sf::Vector2f(x1, y1))
-                };
-
-                window->draw(line, 2, sf::Lines);
-            }
-        }
-};
-
+#include "sfml-tsp-gfx.cpp"
 
 void init(void) {
+    painter = new TSPPainter();
+
     // create and set up the application's data model:
     createPoints();
+    painter->updatePoints(points);
+
     createRoutingTable();
     cout << routingTable->debug();
-    currentRoute = TSPRouter::naiveOrdered();
+
+    // currentRoute = TSPRouter::naiveOrdered();
+    currentRoute = TSPRouter::naiveClosest();
     cout << "Current Route is " << (currentRoute->isComplete()?"complete":"not complete") << "." << endl;
+    cout << "Route length: " << currentRoute->getLength() << "." << endl;
+    painter->updateRoute(currentRoute);
 
-
-    vector<TSPPoint>::iterator i;
-    int idx=0;
-    for(i=points.begin(); i!=points.end(); ++i) {
-        // cout << (*i) << endl;
-        sf::CircleShape s(5.f);
-        s.setFillColor(getRandomColor());
-        s.move(-5, -5); // move center to 0;0
-        s.move(
-            coord2screenX((*i).getX()),
-            coord2screenY((*i).getY())
-        );
-        try{
-            gfxPoints.at(idx) = s;
-        } catch(out_of_range ex) {
-            cout << ex.what() << endl;
-        }
-        idx++;
-    }
 }
 
 void destroy(void) {
@@ -109,7 +32,10 @@ void destroy(void) {
 }
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(wWidth, wHeight), "Travelling Salesman Problem using SFML");
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+
+    sf::RenderWindow window(sf::VideoMode(wWidth, wHeight), "Travelling Salesman Problem using SFML", sf::Style::Default, settings);
 
     // sf::CircleShape circle1(100.f);
     // circle1.setFillColor(sf::Color::Red);
@@ -189,29 +115,14 @@ int main() {
 
         // window.draw(circle1);
 
-        // highlight the point which is closest to the mouse pointer:
-        if (highlightedPoint != -1) {
-            gfxPoints[highlightedPoint].setRadius(20);
-            gfxPoints[highlightedPoint].move(-15,-15);
-        }
-
-        // draw the TSP points
-        vector<sf::CircleShape>::const_iterator i;
-        for(i=gfxPoints.begin(); i!=gfxPoints.end(); ++i) {
-            window.draw(*i);
-        }
+        // paint all points, highlight the point which is closest to the mouse pointer:
+        painter->paintPoints(&window, highlightedPoint);
 
         // draw the current route:
-        TSPPainter::paintRoute(&window, currentRoute);
+        painter->paintRoute(&window);
 
         // internally swaps the front and back buffers:
         window.display();
-
-        // reset the highlighted point to normal size:
-        if (highlightedPoint != -1) {
-            gfxPoints[highlightedPoint].setRadius(5);
-            gfxPoints[highlightedPoint].move(15,15);
-        }
 
     }
 
