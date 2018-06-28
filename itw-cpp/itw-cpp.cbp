@@ -33,10 +33,6 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="../Juni2018/sfml-tsp-gfx.cpp">
-			<Option target="Debug" />
-		</Unit>
-		<Unit filename="main.cpp" />
-		<Unit filename="personen.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Extensions>

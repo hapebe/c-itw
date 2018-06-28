@@ -1,4 +1,4 @@
-#define TSP_N 1000 // Number of desired points in the TSP model
+#define TSP_N 100 // Number of desired points in the TSP model
 #include <sstream>
 #include <vector>
 using namespace std;
@@ -78,6 +78,21 @@ class TSPRoutingTable {
             s << "TSPRoutingTable for " << n << " points, i.e. " << (n*(n-1)/2) << " relations." << endl;
             return s.str();
         }
+        int findClosestPointIdx(double x, double y) {
+            double minD = 1e100;
+            double minIdx = -1;
+
+            // iterate all points, remember the one with the least distance to x;y
+            for (int i=0; i<points.size(); i++) {
+                double d = points[i].getDistanceTo(x,y);
+                if (d < minD) {
+                    minD = d;
+                    minIdx = i;
+                }
+            }
+
+            return minIdx;
+        }
 };
 
 class TSPRoute {
@@ -87,7 +102,11 @@ class TSPRoute {
     public:
         TSPRoute() { this->length = -1; }
         void addStep(int idx) { seq.push_back(idx); }
-        int getStep(int idx) { return seq[idx]; }
+        int getStep(int idx) { return seq[(idx + getSize()) % getSize()]; }
+        void setStep(int idx, int point) {
+            seq[(idx + getSize()) % getSize()] = point;
+            length = -1; // length has to be recalculated
+        }
         bool isComplete(void);
         int getSize(void) { return seq.size(); }
         double getLength(void);
@@ -131,6 +150,24 @@ class TSPRouter {
             for (int i=0; i<TSP_N; i++) r->addStep(i);
             return r;
         }
+        static TSPRoute * naiveRandom(void) {
+            int seq[TSP_N]; for (int i=0; i<TSP_N; i++) seq[i] = i;
+
+            // shuffle the sequence 100 times completely:
+            for (int rounds = 0; rounds<100; rounds++) {
+                for (int i=0; i<TSP_N; i++) {
+                    int j=rand() % TSP_N;
+
+                    int temp = seq[i];
+                    seq[i] = seq[j];
+                    seq[j] = temp;
+                }
+            }
+
+            TSPRoute * r = new TSPRoute();
+            for (int i=0; i<TSP_N; i++) r->addStep(seq[i]);
+            return r;
+        }
         static TSPRoute * naiveClosest(void) {
             bool free[TSP_N];
             for (int i=0; i<TSP_N; i++) free[i] = true;
@@ -169,6 +206,55 @@ class TSPRouter {
         }
 };
 
+class TSPRouteOptimizer {
+public:
+static bool switchAnyTwoPoints(TSPRoute * r) {
+    double benchmark = r->getLength();
+    int actualSwitchIdx = -1;
+    double switchLength = benchmark;
+
+    // cout << "Trying to find a shorter route (<" << switchLength << ") by switching any two points:" << endl;
+
+    for (int i=0; i<r->getSize(); i++) {
+        int idxA = r->getStep(i);
+        int idxB = r->getStep(i+1);
+
+        // try:
+        r->setStep(i, idxB);
+        r->setStep(i+1, idxA);
+
+        if (r->getLength() < switchLength) {
+            actualSwitchIdx = i;
+            switchLength = r->getLength();
+        }
+
+        // restore:
+        r->setStep(i, idxA);
+        r->setStep(i+1, idxB);
+    }
+
+    if (actualSwitchIdx >= 0) {
+
+        // actually do:
+        int idxA = r->getStep(actualSwitchIdx);
+        int idxB = r->getStep(actualSwitchIdx+1);
+
+        r->setStep(actualSwitchIdx, idxB);
+        r->setStep(actualSwitchIdx+1, idxA);
+
+        cout << "Found a shorter (" << r->getLength() << ") route in switchAnyTwoPoints: " << idxA << "<->" << idxB << endl;
+
+        if (!r->isComplete()) {
+            throw new runtime_error("switchAnyTwoPoints() produced an incomplete route!");
+        }
+
+        return true;
+    }
+
+    return false;
+}
+};
+
 
 
 
@@ -177,11 +263,6 @@ class TSPRouter {
 // STAND-ALONE FUNCTIONS                                                   //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
-
-double randomDouble(void) {
-    long max = RAND_MAX;
-    return (double)rand() / max;
-}
 
 void createPoints(void) {
     srand(0); // use a fixed random seed, so the point configuration becomes predictable
@@ -215,20 +296,3 @@ void createRoutingTable() {
 }
 
 void deleteRoutingTable() { delete(routingTable); routingTable = NULL; }
-
-
-int findClosestPointIdx(double x, double y) {
-    double minD = 1e100;
-    double minIdx = -1;
-
-    // iterate all points, remember the one with the least distance to x;y
-    for (int i=0; i<points.size(); i++) {
-        double d = points[i].getDistanceTo(x,y);
-        if (d < minD) {
-            minD = d;
-            minIdx = i;
-        }
-    }
-
-    return minIdx;
-}

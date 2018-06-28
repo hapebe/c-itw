@@ -7,7 +7,24 @@
 #include "sfml-tsp-model.cpp"
 #include "sfml-tsp-gfx.cpp"
 
+void setRandomRoute(void) {
+    TSPRoute * r = TSPRouter::naiveRandom();
+
+    // only if this one is better:
+    if (currentRoute == NULL || (r->getLength() < currentRoute->getLength())) {
+        if (currentRoute != NULL) delete currentRoute;
+
+        currentRoute = r;
+        // cout << "Current Route is " << (currentRoute->isComplete()?"complete":"not complete") << "." << endl;
+        cout << "Route length: " << currentRoute->getLength() << "." << endl;
+        painter->updateRoute(currentRoute);
+    } else {
+        cout << "Not accepting new route because of length " << r->getLength() << "." << endl;
+    }
+}
+
 void init(void) {
+    currentRoute = NULL;
     painter = new TSPPainter();
 
     // create and set up the application's data model:
@@ -18,10 +35,11 @@ void init(void) {
     cout << routingTable->debug();
 
     // currentRoute = TSPRouter::naiveOrdered();
-    currentRoute = TSPRouter::naiveClosest();
-    cout << "Current Route is " << (currentRoute->isComplete()?"complete":"not complete") << "." << endl;
-    cout << "Route length: " << currentRoute->getLength() << "." << endl;
-    painter->updateRoute(currentRoute);
+//    currentRoute = TSPRouter::naiveClosest();
+//    cout << "Current Route is " << (currentRoute->isComplete()?"complete":"not complete") << "." << endl;
+//    cout << "Route length: " << currentRoute->getLength() << "." << endl;
+//    painter->updateRoute(currentRoute);
+    setRandomRoute();
 
 }
 
@@ -69,6 +87,14 @@ int main() {
                 // key pressed
                 case sf::Event::KeyPressed:
                     std::cout << "key pressed: " << event.key.code << std::endl;
+                    if (event.key.code == sf::Keyboard::Space) {
+                        setRandomRoute();
+                    }
+                    if (event.key.code == sf::Keyboard::O) {
+                        if (TSPRouteOptimizer::switchAnyTwoPoints(currentRoute)) {
+                            painter->updateRoute(currentRoute);
+                        }
+                    }
                     break;
 
                 // mouse events
@@ -81,7 +107,7 @@ int main() {
                 case sf::Event::MouseMoved:
                     currentMouseX = event.mouseMove.x;
                     currentMouseY = event.mouseMove.y;
-                    highlightedPoint = findClosestPointIdx(
+                    highlightedPoint = routingTable->findClosestPointIdx(
                         screen2coordX(currentMouseX),
                         screen2coordY(currentMouseY)
                     );
@@ -101,8 +127,8 @@ int main() {
 
                 // text entered
                 case sf::Event::TextEntered:
-                    if (event.text.unicode < 128)
-                        std::cout << "ASCII character typed: " << static_cast<char>(event.text.unicode) << std::endl;
+                    // if (event.text.unicode < 128)
+                    //    std::cout << "ASCII character typed: " << static_cast<char>(event.text.unicode) << std::endl;
                     break;
 
                 // we don't process other types of events

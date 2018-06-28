@@ -3,6 +3,7 @@
 *.log
 **/*-zahlen-eingabe
 .~lock**
+*.*~
 gmon.out
 # Geany project files:
 it5.dev

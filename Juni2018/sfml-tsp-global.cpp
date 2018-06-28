@@ -21,3 +21,8 @@ const sf::Color getRandomColor(void) {
     return sf::Color::White;
 }
 
+double randomDouble(void) {
+    long max = RAND_MAX;
+    return (double)rand() / max;
+}
+

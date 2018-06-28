@@ -75,8 +75,9 @@ void TSPPainter::updateRoute(TSPRoute * r) {
         this->routePoints[i] = sf::Vertex(sf::Vector2f(x, y));
     }
     // ... back to the first point (closest path):
-    int x = coord2screenX(points[0].getX());
-    int y = coord2screenY(points[0].getY());
+    int idx = r->getStep(0);
+    int x = coord2screenX(points[idx].getX());
+    int y = coord2screenY(points[idx].getY());
     this->routePoints[r->getSize()] = sf::Vertex(sf::Vector2f(x, y));
 }
 

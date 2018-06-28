@@ -82,6 +82,10 @@ ich mir mal vornehme.
 Neben der [Installation unter Linux (Debian/Ubuntu)](https://www.sfml-dev.org/tutorials/2.5/start-linux.php) schaue ich mir die 
 [Integration in Code::Blocks](https://www.sfml-dev.org/tutorials/2.5/start-cb.php) an.
 
+Inzwischen ist daraus / damit ein Programm rund um das 
+["Travelling Salesman Problem"](https://de.wikipedia.org/wiki/Problem_des_Handlungsreisenden) 
+entstanden: [sfml-tsp.cpp](Juni2018/sfml-tsp.cpp).
+
 ## MySQL
 
 Am 18. Juni habe ich auf dem Debian-Router MySQL installiert; und einen 
