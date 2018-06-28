@@ -1,4 +1,4 @@
-#define TSP_N 100 // Number of desired points in the TSP model
+#define TSP_N 1000 // Number of desired points in the TSP model
 #include <sstream>
 #include <vector>
 using namespace std;

@@ -35,11 +35,11 @@ void init(void) {
     cout << routingTable->debug();
 
     // currentRoute = TSPRouter::naiveOrdered();
-//    currentRoute = TSPRouter::naiveClosest();
-//    cout << "Current Route is " << (currentRoute->isComplete()?"complete":"not complete") << "." << endl;
-//    cout << "Route length: " << currentRoute->getLength() << "." << endl;
-//    painter->updateRoute(currentRoute);
-    setRandomRoute();
+    currentRoute = TSPRouter::naiveClosest();
+    cout << "Current Route is " << (currentRoute->isComplete()?"complete":"not complete") << "." << endl;
+    cout << "Route length: " << currentRoute->getLength() << "." << endl;
+    painter->updateRoute(currentRoute);
+//    setRandomRoute();
 
 }
 
