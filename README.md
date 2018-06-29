@@ -84,7 +84,13 @@ Neben der [Installation unter Linux (Debian/Ubuntu)](https://www.sfml-dev.org/tu
 
 Inzwischen ist daraus / damit ein Programm rund um das 
 ["Travelling Salesman Problem"](https://de.wikipedia.org/wiki/Problem_des_Handlungsreisenden) 
-entstanden: [sfml-tsp.cpp](Juni2018/sfml-tsp.cpp).
+entstanden: [sfml-tsp](https://github.com/hapebe/sfml-tsp).
+
+Nachdem Code::Blocks eine Menge spontaner Abstürze erlitten hat, habe ich 
+das Programm in ein eigenes git-Repository ausgelagert (damit ich nicht mehr
+auf einem Netzwerk-Dateisystem arbeite). Hat nicht viel gebracht, fürchte 
+ich - entweder sind die Abstürze ganz unvermeidbar, oder sie haben mit 
+meiner Art der Aufteilung auf mehrere Quelldateien zu tun.
 
 ## MySQL
 
