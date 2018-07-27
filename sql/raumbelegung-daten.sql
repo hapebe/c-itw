@@ -89,7 +89,7 @@ INSERT INTO arbeitsplaetze (raumid) VALUES
 ((SELECT raumid FROM raeume WHERE bezeichnung='Raum 111')),
 ((SELECT raumid FROM raeume WHERE bezeichnung='Raum 111')),
 ((SELECT raumid FROM raeume WHERE bezeichnung='Raum 111'));
--- 2 Arbeitsplätze in Rezeption erstellen:
+-- 2 Arbeitsplätze in der Rezeption erstellen:
 INSERT INTO arbeitsplaetze (raumid) VALUES
 ((SELECT raumid FROM raeume WHERE bezeichnung='Rezeption')),
 ((SELECT raumid FROM raeume WHERE bezeichnung='Rezeption'));
@@ -170,3 +170,11 @@ SELECT * FROM mitarbeiter_ohne_ap;
 -- dieser View wurde schon im MySQL-Schema angelegt:
 SELECT 'Freie Computer:' AS Liste;
 SELECT * FROM freie_computer;
+
+-- Test: ein verwendeter Computer wird gelöscht - funktioniert das Löschen der Belegung?
+SELECT 'PC09 wird gelöscht; macht das Frau Leichtfuß Arbeitsplatz-los?' AS Computer_Loeschen;
+DELETE FROM computer WHERE networkname='PC09';
+SELECT 'Mitarbeiter ohne Arbeitsplatz:' AS Liste;
+SELECT * FROM mitarbeiter_ohne_ap;
+SELECT 'Freie Arbeitsplaetze pro Raum:' AS Liste;
+SELECT * FROM freie_ap_raum;
