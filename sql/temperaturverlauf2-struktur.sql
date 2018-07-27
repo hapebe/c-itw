@@ -29,7 +29,8 @@ INSERT INTO koordinaten
 VALUES
 (10000, 'Berlin', 13.3, 52.533),
 (83043, 'Bad Aibling', 12.017, 47.867),
-(03025, 'Calau', 13.958, 51.75)
+(03025, 'Calau', 13.958, 51.75),
+(36039, 'Fulda', 9.66, 50.58)
 ;
 
 
@@ -50,7 +51,10 @@ VALUES
 ((SELECT id FROM koordinaten WHERE ort='Berlin'), '2018-07-24', '10:00', 24.8),
 ((SELECT id FROM koordinaten WHERE ort='Berlin'), '2018-07-24', '14:00', 27.5),
 ((SELECT id FROM koordinaten WHERE ort='Calau'), '2018-07-24', '14:00', 27.0),
-((SELECT id FROM koordinaten WHERE ort='Bad Aibling'), '2018-07-24', '13:00', 24.0)
+((SELECT id FROM koordinaten WHERE ort='Bad Aibling'), '2018-07-24', '13:00', 24.0),
+((SELECT id FROM koordinaten WHERE ort='Berlin'), '2018-07-25', '07:00', 27),
+((SELECT id FROM koordinaten WHERE ort='Fulda'), '2018-07-25', '07:00', 27.5),
+((SELECT id FROM koordinaten WHERE ort='Bad Aibling'), '2018-07-25', '07:00', 26.8)
 ;
 
 
@@ -97,13 +101,14 @@ Ab hier: Umbau auf 3. Normalform, bzw. Ausgliederung der Orte via Referenzierung
 
 -- und jetzt Umbau auf 3. Normalform (Ortsnamen über PLZ)
 ALTER TABLE daten DROP FOREIGN KEY daten_fk_ort;
+ALTER TABLE daten DROP INDEX daten_fk_ort;
 ALTER TABLE daten CHANGE ort koordid INT NOT NULL;
 
 SELECT 'Daten komplett' AS Tabelle;
 SELECT * FROM daten;
 
 ALTER TABLE koordinaten DROP COLUMN ort;
-ALTER TABLE koordinaten CHANGE id koordid INT;
+ALTER TABLE koordinaten CHANGE id koordid INT NOT NULL AUTO_INCREMENT;
 
 SELECT 'Koordinaten komplett' AS Tabelle;
 SELECT * FROM koordinaten;
@@ -115,14 +120,15 @@ CREATE TABLE orte (
 INSERT INTO orte (plz, name) VALUES
 (10000, 'Berlin'),
 (83043, 'Bad Aibling'),
-(3025, 'Calau')
+(3025, 'Calau'),
+(36039, 'Fulda')
 ;
 
 SELECT 'Orte komplett' AS Tabelle;
 SELECT * FROM orte;
 
 
--- FOREIGN KEY definieren (gehört nicht zum Unterrichts-Umfang!)
+-- FOREIGN KEY definieren
 ALTER TABLE koordinaten
 	ADD 
 	CONSTRAINT koordinaten_fk_plz
@@ -131,14 +137,39 @@ ALTER TABLE koordinaten
 	ON DELETE CASCADE
 	ON UPDATE CASCADE;
 
-
 SELECT 'Unsere eigentliche "Payload"-Aufgabe: Liste von Orten mit Temperatur:' AS Payload;
 -- wenn der Primär- und Fremdschlüssel gleich heißen (hier: koordid und plz), dann kann man NATURAL JOIN benutzen:
 SELECT plz, name, laenge, breite, uhrzeit, temperatur FROM daten NATURAL JOIN koordinaten NATURAL JOIN orte ORDER BY name, datum, uhrzeit ASC;
 
--- jetzt bekommt Calau probehalber eine neue PLZ: 
-UPDATE orte SET plz=3222 WHERE name='Calau';
+-- Calau bekommt probehalber eine neue PLZ: 
+-- UPDATE orte SET plz=3222 WHERE name='Calau';
+-- SELECT 'Funktioniert es noch, nachdem Calau eine andere PLZ bekommen hat?' AS FremdSchluesselTest;
+-- SELECT plz, name, laenge, breite, uhrzeit, temperatur FROM daten NATURAL JOIN koordinaten NATURAL JOIN orte ORDER BY name, datum, uhrzeit ASC;
 
-SELECT 'Funktioniert es noch, nachdem Calau eine andere PLZ bekommen hat?' AS FremdSchluesselTest;
-SELECT plz, name, laenge, breite, uhrzeit, temperatur FROM daten NATURAL JOIN koordinaten NATURAL JOIN orte ORDER BY name, datum, uhrzeit ASC;
+CREATE VIEW alles AS SELECT LPAD(plz,5,'0') AS plz, name, laenge, breite, uhrzeit, FORMAT(temperatur,1) AS temperatur FROM daten NATURAL JOIN koordinaten NATURAL JOIN orte ORDER BY name, datum, uhrzeit ASC;
+SELECT 'Und jetzt als simpler View:' AS Als_View;
+SELECT * FROM alles;
 
+-- Theoretisch können wir jetzt Datensätze in den View ("Abfrage" heißt sowas in Access) einfügen:
+/*
+INSERT INTO alles 
+(plz, name, laenge, breite, uhrzeit, temperatur) 
+VALUES
+(10000, Berlin, 13.3, 52.533, '09:00', 25.3);
+*/
+-- Praktisch sollte das hier nicht gehen, zumindest weil das Datum fehlt.
+-- Es gibt anscheinend schon vorher Probleme: ERROR 1348 (HY000) at line 149: Column 'plz' is not updatable
+
+SELECT name, orte.plz, laenge, breite FROM orte JOIN koordinaten USING(plz);
+
+SELECT name, orte.plz, laenge, breite, datum, uhrzeit, temperatur 
+FROM orte JOIN koordinaten USING(plz) JOIN daten ON koordinaten.koordid=daten.koordid
+WHERE datum='2018-07-25' AND uhrzeit='07:00';
+
+-- versuchen, Koordinaten für einen unbekannten Ort einzutragen:
+-- INSERT INTO koordinaten (plz, laenge, breite) VALUES (12345, -12.5, -102.1);
+-- jupp, das gibt einen Fehler statt eines neuen Datensatzes!
+
+SELECT 'Fremdschlüssel in der Datenbank information_schema:' AS foreign_key_record;
+-- SELECT * FROM information_schema.referential_constraints WHERE table_name='koordinaten';
+SELECT * FROM information_schema.referential_constraints WHERE constraint_schema='temperaturverlauf';

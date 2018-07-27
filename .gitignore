@@ -4,7 +4,10 @@
 **/*-zahlen-eingabe
 .~lock**
 *.*~
+*.bak
 gmon.out
+# keys or secrets:
+sql/mysql-debian-router.cmd
 # Geany project files:
 it5.dev
 it5.layout
@@ -42,10 +45,12 @@ gtk-experimente/table0
 gtk-experimente/schiffe0
 itw-cpp/ip-adressen
 # possibly copyrighted artwork:
-sql/2718_geodatendeutschland_3010_20180710.xlsx
 gtk-experimente/sea.xpm
+sql/2718_geodatendeutschland_3010_20180710.xlsx
 sql/staedte-daten.sql
 sql/www-fwiegleb-de-geo.xlsx
 sql/www-fwiegleb-de-geo.txt
 # generated files:
+sql/@db/**
+sql/lock
 FUNKTION eDouble.png
