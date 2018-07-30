@@ -3,6 +3,22 @@
 
 USE raumbelegung;
 
+-- User anlegen, der nur abfragen darf; das aber von überall
+-- (keine Struktur-Befehle; kein INSERT, kein DELETE)
+DROP USER IF EXISTS 'zuschauer'@'%';
+CREATE USER zuschauer@'%' IDENTIFIED BY 'passwort';
+GRANT SELECT ON raumbelegung.* TO zuschauer@'%';
+SHOW GRANTS FOR zuschauer@'%';
+
+-- User anlegen, der Belegungen bearbeiten darf 
+-- (sonst nur lesen, wenn überhaupt)
+DROP USER IF EXISTS planer@'%';
+CREATE USER planer@'%' IDENTIFIED BY 'passwort';
+GRANT SELECT, UPDATE, INSERT, DELETE ON raumbelegung.belegung TO planer@'%';
+GRANT SELECT ON raumbelegung.belegung_lesbar TO planer@'%';
+SHOW GRANTS FOR planer@'%';
+
+
 -- erstmal alles löschen (aufpassen wegen foreign keys...):
 DELETE FROM belegung;
 DELETE FROM arbeitsplaetze;

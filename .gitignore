@@ -4,6 +4,7 @@
 **/*-zahlen-eingabe
 .~lock**
 *.*~
+~$*
 *.bak
 gmon.out
 # keys or secrets:
