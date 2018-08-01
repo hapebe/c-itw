@@ -19,7 +19,11 @@ GRANT SELECT ON raumbelegung.belegung_lesbar TO planer@'%';
 SHOW GRANTS FOR planer@'%';
 
 
--- erstmal alles löschen (aufpassen wegen foreign keys...):
+-- Geht sowas? Ja!
+-- SHOW CREATE VIEW belegung_lesbar;
+
+
+-- erstmal alle Daten löschen (aufpassen wegen foreign keys...):
 DELETE FROM belegung;
 DELETE FROM arbeitsplaetze;
 DELETE FROM computer;
@@ -194,3 +198,5 @@ SELECT 'Mitarbeiter ohne Arbeitsplatz:' AS Liste;
 SELECT * FROM mitarbeiter_ohne_ap;
 SELECT 'Freie Arbeitsplaetze pro Raum:' AS Liste;
 SELECT * FROM freie_ap_raum;
+
+
